@@ -1,1 +1,1 @@
-User-agent: * Disallow: Sitemap: https://RFanGit.github.io/sitemap.xml
+User-agent: * Disallow: Sitemap: https://rfangit.github.io/sitemap.xml
