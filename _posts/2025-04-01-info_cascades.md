@@ -2,7 +2,7 @@
 layout: distill
 title: How Molecular Cascades Communicate
 description: Clarifying a common misunderstanding when applying information theory to biological data
-tags: distill formatting
+tags: biology information-theory math
 giscus_comments: true
 date: 2025-04-01
 featured: true
