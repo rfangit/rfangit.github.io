@@ -210,7 +210,7 @@ Our cascade consists of two physical processes, production events and degradatio
 The first process
 
 \begin{aligned}
-y \rightarrow{\alpha x} y+1
+y \xrightarrow{\alpha x} y+1
 \end{aligned}
 
 corresponds to a well studied channel in the optical communications literature, known as the direct detection photon channel. Several results for the channel capacity are known under different constraints for $\alpha x$, which we briefly include here. 
@@ -243,7 +243,7 @@ $$
 For the second process 
 
 \begin{aligned}
-y \rightarrow{y/\tau_y} y-1
+y \xrightarrow{y/\tau_y} y-1
 \end{aligned}
 
 which uses $Y_{birth}(t)$ and an initial number of molecules to generate $Y(t)$, note that $Y_{birth}(t)$ can always be inferred directly from $Y(t)$ by noting where the molecule number increases. Therefore the channel capacity of this process is always the entropy of the input $Y_{birth}$.
