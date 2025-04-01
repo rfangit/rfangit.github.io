@@ -112,7 +112,7 @@ $$
 
 Entropy is an important concept in information theory, and measures spread of a distribution.
 
-To understand the idea behind this formula, consider a communication channel that returns $Y$ given $X$. In an ideal channel, every input $X$ maps to a unique output $Y$, and thus $H(Y \| X) = 0$ Then mutual information is maximized at $I(X; Y) = H(Y)$. Most channels are noisy with $H(Y \| X) > 0$, lowering the information shared across this channel.
+To understand the idea behind this formula, consider a communication channel that returns $Y$ given $X$. In an ideal channel, every input $X$ maps to a unique output $Y$, and thus $H(Y \| X) = 0$. Then mutual information is maximized at $I(X; Y) = H(Y)$. Most channels are noisy with $H(Y \| X) > 0$, lowering the information shared across this channel.
 
 The 'noise' also depends on the input distribution $P(X)$, as our channel will treat different inputs different, and some inputs may be noisier than others.
 
