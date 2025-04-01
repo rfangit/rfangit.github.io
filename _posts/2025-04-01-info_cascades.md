@@ -292,7 +292,7 @@ However, the link between the different instantaneous distributions only arises 
     </div>
 </div>
 <div class="caption">
-    One source of confusion in the literature is the notion of a Markov chain. Our system of chemical reactions does form a Markov chain, but it is not a Markov chain in the sense that would be needed to have the data processing inequality between the experimentally observed distributions.
+    A source of confusion for applying the data processing inequality is the fact it works for Markov chains. A cascade of chemical reactions such as the one analyzed in this post is in fact a Markov chain, but not between the variables $X \rightarrow Y \rightarrow Z$. If the state of the cell is treated as a variable (a vector with the abundances of all molecules involved) then the state of the cell through time forms a Markov chain between the different states in time.
 </div>
 
 ### Violations Of The "Data-Processing Inequality"
