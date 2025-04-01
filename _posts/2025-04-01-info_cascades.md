@@ -260,7 +260,7 @@ $$
 
 In practice, it is difficult to measure time traces of multiple molecules inside of living cells simultaneously. Furthermore, the mutual information discussed above applies to distributions of time traces, which is hard to estimate from experimental data (any specific time trace has near zero probability).
 
-However, it is possible to measure the abundances of multiple molecules in recently deceased cells. This can be done on large numbers of cells to obtain joint probability distributions of <b>instantaneous</b> molecular abundances. This data can be analyzed to infer properties of the underlying relationships. This is illustrated in the following figure.
+However, it is possible to measure the abundances of multiple molecules in recently deceased cells. This can be done on large numbers of cells to obtain joint probability distributions of <b>instantaneous</b> molecular abundances, illustrated in the following figure. This data can be analyzed to infer properties of the underlying relationships. 
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
