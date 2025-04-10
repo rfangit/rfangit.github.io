@@ -4,7 +4,7 @@ title: How Molecular Cascades Communicate
 description: Clarifying a common misunderstanding when applying information theory to biological data
 tags: biology information-theory math
 giscus_comments: true
-date: 2025-04-01
+date: 2025-04-09
 featured: true
 mermaid:
   enabled: true
@@ -61,11 +61,11 @@ _styles: >
 
 ## Introduction
 
-Information theory was originally developed in the context of optimizing electronic communications. This has resulted in a lot of confusion when applied to the biological sciences. 
+Information theory was originally developed in the context of optimizing electronic communications. This has resulted in much confusion when applied to the biological sciences. 
 
-The purpose of this blog post is to clarify what exactly information theory tells us about information transfer through a chemical cascade. It is intended as a supplement to [my paper on the topic](https://arxiv.org/pdf/2309.10162){:target="_blank"}, written for an audience new to both information theory and stochastic modelling. 
+This blog post is intended to clarify what information theory tells us about information transfer through a chemical cascade. It is intended as a supplement to [my paper on the topic](https://arxiv.org/pdf/2309.10162){:target="_blank"}, intended for an audience new to both information theory and stochastic modelling. 
 
-Here, we analyze a cascade of three species of molecules, $X \xrightarrow{} Y \xrightarrow{} Z$, where $X \xrightarrow{} Y$ denotes that the production rate of molecule $Y$ is proportional to the amount of $X$ molecules, and similarly for $Y \xrightarrow{} Z$. This represents a simple biochemical cascade.
+Specifically, we analyze a cascade of three species of molecules, $X \xrightarrow{} Y \xrightarrow{} Z$, where $X \xrightarrow{} Y$ denotes that the production rate of molecule $Y$ is proportional to the amount of $X$ molecules, and similarly for $Y \xrightarrow{} Z$. This represents a simple biochemical cascade.
 
 Mathematically, the cascade is defined by the following chemical reactions
 
@@ -76,7 +76,7 @@ Mathematically, the cascade is defined by the following chemical reactions
     z &\xrightarrow[\phantom{z/\tau_z}]{z/\tau_z} z-1 & 
 \end{aligned}
 
-where the dynamics governing $x(t)$ have been left unspecified. Such cascades have been used before to model relationships between DNA, mRNA and protein.
+where the dynamics governing $x(t)$ have been left unspecified. Such cascades have been used before to model [relationships between DNA, mRNA and protein](https://www.theorie.physik.lmu.de/lsfrey/teaching/archiv/wise_08_09/statphysbio/Paulsson_Physics_of_Life_Reviews_2005.pdf){:target="_blank"}.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -96,7 +96,7 @@ where the dynamics governing $x(t)$ have been left unspecified. Such cascades ha
 
 This section is an introduction to information theory concepts for non-experts. Those who are already familiar with information theory can skip ahead to the next section.
 
-To communicate through our channel, we can choose an input signal $X(t)$, which in our cascade will generate curves $Y(t), Z(t)$. An observer watching the behavior of $Y(t), Z(t)$ can identify characteristics of the chosen input $X(t)$ and receive information.
+To communicate through our channel, we can choose an input signal $X(t)$, and the cascade will generate signals $Y(t), Z(t)$. An observer watching the behavior of $Y(t), Z(t)$ can identify characteristics of the chosen input $X(t)$ and receive information.
 
 This idea is formalized in information theory by the mutual information between a pair of variables $X, Y$, given by the following formula
 
@@ -114,7 +114,7 @@ Entropy is an important concept in information theory, and measures spread of a 
 
 To understand the idea behind this formula, consider a communication channel that returns $Y$ given $X$. In an ideal channel, every input $X$ maps to a unique output $Y$, and thus $H(Y \| X) = 0$. Then mutual information is maximized at $I(X; Y) = H(Y)$. Most channels are noisy with $H(Y \| X) > 0$, lowering the information shared across this channel.
 
-The 'noise' also depends on the input distribution $P(X)$, as our channel will treat different inputs different, and some inputs may be noisier than others.
+The 'noise' also depends on the input distribution $P(X)$. Some inputs, when sent throught he channel, result in outputs that are easier to distinguish than others.
 
 The channel capacity is the maximum $I(X; Y)$, achieved by maximizing over all possible input distributions $P(X)$. It quantifies the maximum amount of information that can be sent through the channel.
 
@@ -126,9 +126,9 @@ $$
 
 Colloquially, this means mutual information between distant variables in the chain is always less than mutual information between closely related variables. The inequality is actually true as long as $P(X, Z \|Y) = P(X \| Y)P(Z \| Y)$ (known as <b>conditional independence </b>), which is true for all Markov chains $X \xrightarrow{} Y \xrightarrow{} Z$.
 
-These properties enable us to analyze large communication networks by computing the channel capacity of individual channels. The data processing inequality tells us the channel capacity of the entire channel is given by the smallest channel capacity in the network.
+These properties imply we can analyze large communication networks by computing the channel capacity of individual channels. The data processing inequality tells us the channel capacity of the entire channel is given by the smallest channel capacity in the network.
 
-Note in the context of electrical communications, the channel capacity for a large network is achievable by transforming the data appropriately for each channel. But for a biological cascade where components are linked up directly and arbitrary transformations cannot be applied, the actual channel capacity may be much less than the individual components.
+**Note:** In the context of electrical communications, the channel capacity for a large network is achievable by transforming the data appropriately for each channel. But for a biological cascade where components are linked up directly and arbitrary transformations cannot be applied, the actual channel capacity may be much less than the individual components.
 
 ## Chemical Cascades and Information
 
@@ -226,7 +226,7 @@ $$
 If the mean $\alpha \langle x \rangle$ is also constrained, then the capacity becomes 
 
 $$
-C = \alpha \langle x \rangle ln\frac{A_{max}}{\alpha \langle x \rangle}
+C = \alpha \langle x \rangle \log \left( \frac{A_{max}}{\alpha \langle x \rangle} \right)
 $$
 
 These capacities are realized by sending in $x(t)$ that oscillates between 0 and $A_{max}$ instantaneously. This is highly nonphysical for biological systems.
@@ -246,9 +246,9 @@ For the second process
 y \xrightarrow{y/\tau_y} y-1
 \end{aligned}
 
-which uses $Y_{birth}(t)$ and an initial number of molecules to generate $Y(t)$, note $Y_{birth}(t)$ can always be accurately inferred from $Y(t)$ by noting where the molecule number increases. Therefore the channel capacity of this process is always the entropy of the input $Y_{birth}$.
+which uses $Y_{birth}(t)$ and an initial number of molecules to generate $Y(t)$, observe $Y_{birth}(t)$ can always be accurately inferred from $Y(t)$, since molecular production events are easily detectable. Therefore the channel capacity of this process is always the entropy of the input $Y_{birth}$.
 
-Therefore the channel capacity of $X \rightarrow Y$ is simply the channel capacity of the production reaction, which has been studied before for various constraints.
+Thus the channel capacity of $X \rightarrow Y$ is the channel capacity of the production reaction, which has been studied before for various constraints.
 
 Conditional independence between $X(t), Z(t) \| Y(t)$ thus implies the channel capacity of the full cascade is
 
@@ -292,12 +292,12 @@ However, the link between the different instantaneous distributions only arises 
     </div>
 </div>
 <div class="caption">
-    A source of confusion for applying the data processing inequality is the fact it works for Markov chains. A cascade of chemical reactions such as the one analyzed in this post is in fact a Markov chain, but not between the variables $X \rightarrow Y \rightarrow Z$. If the state of the cell is treated as a variable (a vector with the abundances of all molecules involved, shown on the right) then the state of the cell forms a Markov chain between the different states in time.
+    A source of confusion for applying the data processing inequality is the known fact it works for Markov chains. A cascade of chemical reactions such as the one analyzed in this post is in fact a Markov chain, but not between the variables $X \rightarrow Y \rightarrow Z$. If the state of the cell is treated as a variable (a vector with the abundances of all molecules involved, shown on the right) then the state of the cell forms a Markov chain between the different states in time.
 </div>
 
 ### Violations Of The "Data-Processing Inequality"
 
-A consequence of analyzing the static distributions from experiments is that the data processing inequality which states that for a channel $X \rightarrow Y \rightarrow Z$, the mutual information $I(X; Z) \leq I(X; Y), I(Y; Z)$ is no longer true (since these distributions do not form a channel). 
+A consequence of analyzing the static distributions from experiments is that the data processing inequality is no longer true. This is because the variables $X, Y, Z$ do not form a channel.
 
 This allows for biological cascades to generate distributions in experiments that violate the inequality. This was covered in detail in the paper, where mathematics and numerical simulations have been used to explore the regime of parameter space for which these inequalities break down. This is illustrated in the following figure, where simulating a cascade for a variety of parameters reveals regions of parameter space for which the mutual information $I(X; Z) > I(X; Y)$ (blue region).
 
@@ -317,9 +317,9 @@ This allows for biological cascades to generate distributions in experiments tha
 
 For a simple intuitive explanation of how this can occur, consider the problem of estimating the instantaneous value of $X$. Suppose the abundance of $Y$ is very small, such that low copy number noise is very significant. Then for any value of $X$, there is a large variety of $Y$ values, and it is difficult to estimate $X$ from $Y$.
 
-Suppose that $Y$ molecules have a very short lifetime compared to $X, Z$ molecules. Then the abundance $Y(t)$ will oscillate very quickly. $Z$ molecules, which are made proportional to the amount of $Y$ molecules, will experience rapid fluctuations in their birth rate. But the $Z$ abundance is related to the number of $Z$ molecules made over the average lifetime of a $Z$ molecule, and thus does not vary much if the $Z$ lifetime is large compared to the $Y$ molecule lifetime.
+Suppose $Y$ molecules have a very short lifetime compared to $X, Z$ molecules. Then the abundance $Y$ will oscillate very quickly. $Z$ molecules, which are made proportional to the amount of $Y$ molecules, will experience rapid fluctuations in their birth rate. But the $Z$ abundance is related to the number of $Z$ molecules made over the average lifetime of a $Z$ molecule, and thus does not vary much if the $Z$ lifetime is large compared to the $Y$ molecule lifetime.
 
-In this way, we can accurately estimate the current value of $X$ by looking at the $Z$ abundance, since $Z$ time-averages out the large amount of $Y$ noise. This idea of estimation is closely linked with the mutual information (which represents the reduction in uncertainty about the value of $X$. 
+In this way, we can accurately estimate the current value of $X$ by looking at the $Z$ abundance, since $Z$ time-averages out the large amount of $Y$ noise. This idea of estimation is closely linked with the mutual information (which represents the reduction in uncertainty about the value of $X$). 
 
 ## On Actual Inequalities
 
@@ -329,8 +329,8 @@ The often experimentally measured instantaneous distributions of molecules howev
 
 This observation prompts a deeper question:
 
-<blockquote>
-Can we derive <b>new inequalities</b> that apply to these experimentally accessible (static) distributions?
+<blockquote style="color: inherit; border-left: 3px solid #ccc; padding-left: 15px;">
+  Can we derive <b>new inequalities</b> that apply to these experimentally accessible (static) distributions?
 </blockquote>
 
 Surprisingly, <b>yes</b>&mdash;but with caveats.
@@ -339,4 +339,6 @@ While we saw that $Y$ can accumulate arbitrary information from $X$ over time, a
    - The <b>rate</b> at which $Y$ learns about $X$ (governed by the production reaction)
    - The <b>rate</b> at which $X$'s state changes (governed by X's dynamics)
 
-Unlike the DPI, these new inequalities are dependent on the dynamics of the system involved and do not generalize. Furthermore, they're mathematically difficult to derive and work with. I'll discuss more on this topic in my next blog post, on <b>"Inequalities for Static Distributions in Biochemical Cascades"</b>.
+Unlike the DPI, these new inequalities are dependent on the dynamics of the system involved and do not generalize. Furthermore, they're mathematically difficult to derive and work with.
+
+I'll discuss more on this topic in more detail in a future blog post, on <b>"Inequalities for Static Distributions in Biochemical Cascades"</b>.
