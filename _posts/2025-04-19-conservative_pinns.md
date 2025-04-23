@@ -56,7 +56,7 @@ The code and experimental results for this post are available on [github.](https
 
 ## Introduction
 
-Physics-Informed Neural Networks (PINNs) incorporate physical laws into their architecture, loss functions, or training process to better model physical systems. A prominent example is [**Hamiltonian Neural Networks**](https://arxiv.org/pdf/1906.01563v1){:target="_blank"}, which uses system coordinates $(x_1, x_2, ..., x_n)$ to predict a scalar $U(x_1, ..., x_n)$. Automatic differentiation then easily computes gradients $\left(\frac{dU}{dx_1}, ..., \frac{dU}{dx_n}\right)$, which are used for physics applications.
+Physics-Informed Neural Networks (PINNs) incorporate physical laws into their architecture, loss functions, or training process to better model physical systems. A prominent example is [**Hamiltonian Neural Networks**](https://arxiv.org/pdf/1906.01563v1){:target="_blank"}, which uses system coordinates $(x_1, x_2, ..., x_n)$ to predict a scalar $U(x_1, ..., x_n)$. Automatic differentiation then computes gradients $\left(\frac{dU}{dx_1}, ..., \frac{dU}{dx_n}\right)$, which are used for physics applications.
 
 This guarantees predictions (based on the gradients) will obey fundamental physical laws. For Hamiltonian systems, the equations enforce **energy conservation**. In contrast, a neural network trained to directly predict the gradients from data will not necessarily conserve energy, resulting in poor accuracy in predicting the evolution of physical systems.
 
