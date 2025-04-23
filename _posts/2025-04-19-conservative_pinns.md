@@ -62,7 +62,7 @@ This guarantees predictions (based on the gradients) will obey fundamental physi
 
 The trade-off is that such networks are only applicable with systems with known physical laws, which is not a problem in physics applications.
 
-The underlying principles here are not new. It is well known that different neural network architectures are better suited to specific problems, the most prominent being the large advantages of convolutional neural networks in learning image problems, due to the presence of translational invariance arising in these networks. A conservative vector field like the ones trained by Hamiltonian networks also have their own invariants, where any closed line integral over the vector field is 0 - a more abstract and seemingly less powerful condition than translational invariance.
+The underlying principles here are not new. It is well known that different neural network architectures are better suited to specific problems, the most prominent being the large advantages of convolutional neural networks in computer vision, due to the presence of translational invariance in these networks. A conservative vector field like the ones trained by Hamiltonian networks also have their own invariants, where any closed line integral over the vector field is 0 - a more abstract and seemingly less powerful condition than translational invariance.
 
 ### Training Speed
 
@@ -288,7 +288,7 @@ In our experiments, this makes our conservative networks take roughly twice as l
     </div>
 </div>
 <div class="caption">
-    <strong>Figure:</strong> Taking into account the automatic differentiation needed to evaluate conservative networks roughly doubles the time per epoch, we compare the conservative networks with the baseline against their compute time. There are some slight advantages even in the larger networks, but the increased computational cost removes most advantages in training speed.
+    <strong>Figure:</strong> Taking into account the automatic differentiation needed to evaluate conservative networks roughly doubles the time per epoch, we compare conservative networks with the baseline. There are some slight advantages even in the larger networks, but the increased computational cost removes most advantages in training speed.
 </div>
 
 **Note:** It's not clear to me that this slowdown is fundamental and can't be sped up with some clever gradient accumulation, so this problem may be fixable.
