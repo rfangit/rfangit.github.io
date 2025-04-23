@@ -4,7 +4,7 @@ title: Do Conservative PINNs Train Faster In High Dimensions?
 description: Alternatively, how strong is a conservative vector field as an inductive bias? 
 tags: code math artificial-intelligence
 giscus_comments: true
-date: 2025-04-19
+date: 2025-04-23
 featured: true
 mermaid:
   enabled: true
