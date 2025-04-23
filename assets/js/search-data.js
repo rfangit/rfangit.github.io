@@ -23,7 +23,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/blog/";
           },
-        },{id: "post-how-molecular-cascades-communicate",
+        },{id: "post-do-conservative-pinns-train-faster-in-high-dimensions",
+        
+          title: "Do Conservative PINNs Train Faster In High Dimensions?",
+        
+        description: "Alternatively, how strong is a conservative vector field as an inductive bias?",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/conservative_pinns/";
+          
+        },
+      },{id: "post-how-molecular-cascades-communicate",
         
           title: "How Molecular Cascades Communicate",
         
