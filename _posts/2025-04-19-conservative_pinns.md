@@ -164,7 +164,7 @@ Therefore the conservative network should have lower train and test losses per e
 
 ## Results
 
-We tested networks across a variety of dimensions for the three experiments. For each dimension, three archiectures were used:
+We tested networks across a variety of dimensions for the three experiments. For each dimension, three architectures were used:
 
 | Network Configuration | Hidden Layers       |
 |-----------------------|---------------------|
@@ -273,7 +273,7 @@ This work instead examined whether networks with a built-in conservation law (li
 
 This aligns with the theoretical expectation that learning a scalar potential should be simpler than a $d$ diemsnional vector field. Unfortunately, there is no evidence of a general scaling law for the training speedup of a conservative network, as the speedup effects are dependent on the architecture and do not appear to generalize. See example figures on the ratio of test losses in the github repo.
 
-In the comparison thus far I have neglected the additional compute time cost of the conservative network. The conservative network only generates a scalar, and automatic differentiation is needed for gradients. This automatic differentiation is also used in computing the loss, and constitutes a significant amount of time in training networks.
+In this comparison I've neglected the additional compute time cost of the conservative network. The conservative network generates a scalar, and automatic differentiation is needed for gradients. Automatic differentiation is also used in computing the loss, and constitutes a significant amount of time in training networks.
 
 In our experiments, this makes our conservative networks take roughly twice as long per epoch. Plotting the compute time vs training loss instead of the epoch, we find very minor gains in training performance assuming they do not disappear entirely.
 
