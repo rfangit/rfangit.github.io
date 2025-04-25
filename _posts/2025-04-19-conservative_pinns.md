@@ -56,13 +56,13 @@ The code and experimental results for this post are available on [github.](https
 
 ## Introduction
 
-Physics-Informed Neural Networks (PINNs) incorporate physical laws into their architecture, loss functions, or training process to better model physical systems. A prominent example is [**Hamiltonian Neural Networks**](https://arxiv.org/pdf/1906.01563v1){:target="_blank"}, which uses system coordinates $(x_1, x_2, ..., x_n)$ to predict a scalar $U(x_1, ..., x_n)$. Automatic differentiation then computes gradients $\left(\frac{dU}{dx_1}, ..., \frac{dU}{dx_n}\right)$, which are used for physics applications.
+Physics-Informed Neural Networks (PINNs) incorporate physical laws into their architecture, loss functions, or training process to better model physical systems. A prominent example is [**Hamiltonian Neural Networks**](https://arxiv.org/pdf/1906.01563v1){:target="_blank"}, which uses coordinates $(x_1, x_2, ..., x_n)$ to predict a scalar $U(x_1, ..., x_n)$. Automatic differentiation is used to compute gradients $\left(\frac{dU}{dx_1}, ..., \frac{dU}{dx_n}\right)$.
 
-This guarantees predictions (based on the gradients) will obey fundamental physical laws. For Hamiltonian systems, the equations enforce **energy conservation**. In contrast, a neural network trained to directly predict the gradients from data will not necessarily conserve energy, resulting in poor accuracy in predicting the evolution of physical systems.
+This guarantees predictions (using the gradients) will obey fundamental physical laws. For Hamiltonian networks, the equations enforce **energy conservation**. In contrast, a neural network trained to directly predict the gradients from data will not necessarily conserve energy, resulting in poor accuracy in predicting the time evolution of physical systems.
 
-The trade-off is that such networks are only applicable with systems with known physical laws, which is not a problem in physics applications.
+The trade-off is that this approach only works on systems with known physical laws, which is not a problem in physics applications.
 
-The underlying principles here are not new. It is well known that different neural network architectures are better suited to specific problems, the most prominent being the large advantages of convolutional neural networks in computer vision, due to the presence of translational invariance in these networks. A conservative vector field like the ones trained by Hamiltonian networks also have their own invariants, where any closed line integral over the vector field is 0 - a more abstract and seemingly less powerful condition than translational invariance.
+The underlying principles here are not new. It is well known that different neural network architectures are better suited to specific problems. The most prominent example is the advantages of convolutional neural networks in computer vision, due to translational invariance in images. A conservative vector field like the ones trained by Hamiltonian networks also have their own invariants, where any closed line integral over the vector field is 0 - a more abstract and seemingly less powerful condition than translational invariance.
 
 ### Training Speed
 
@@ -90,7 +90,7 @@ In this blog post, we test whether higher dimensions reveal clearer advantages i
 
 ## Experiment Design
 
-Our question is as follows: Does a network with the inductive bias of a conservative vector field built in train faster than a baseline network as dimensionality increases?
+Our question is as follows: Does a network with the inductive bias of a conservative vector field built in via the gradient procedure in Hamiltonian Neural Networks train faster than a baseline network as dimensionality increases?
 ### The Toy Problem
 
 We construct a $d$-dimensional problem with inputs being coordinates $\vec{x} = (x_1, ..., x_d)$ in $[-1,1]^d$, and a target output vector field $f(\vec{x})$ derived from a sum of Gaussians:
@@ -306,13 +306,13 @@ The second reason is that lots of problems can be mapped to conservative vector 
 An example of personal interest to me is the flow-matching objective, used in a lot of generative modelling. For MSEloss, the analytic solution for the velocities from flow-matching is given by
 
 $$
-v(\vec{x}, t) = \vec{x} C_0 (t) + C_1 (t) \times \left( \vec{x} - \sum_{i} P_{softmax}(C_2(\vec{x} - C_3 (t) \vec{u}_i )^2)  \vec{u}_i \right)
+v(\vec{x}, t) = \vec{x} C_0 (t) + C_1 (t) \times \left( \sum_{i} P_{softmax}(C_2 (t) (\vec{x} - C_3 (t) \vec{u}_i )^2)  \left( \vec{x} - C_3 (t)\vec{u}_i \right)
 $$
 
 where $C_0, C_1, C_2, C_3$ are time-dependent functions that depend on the scheduling used in training (eg, most flow-matching purposes use a linear schedule), and $\vec{u}_i$ are vectors that represent our actual data used to train the model. The terms in front are pretty simple, and the machine learning magic occurs in estimating
 
 $$
-\sum_{i} P_{softmax}(C_2(\vec{x} - C_3 (t) \vec{u}_i )^2)  \vec{u}_i
+\sum_{i} P_{softmax}(C_2(\vec{x} - C_3 (t) \vec{u}_i )^2) \left( \vec{x} - C_3 (t)\vec{u}_i \right)
 $$
 
 which moves directly towards data points, weighted by the softmax of the distance squared. This term is magic, because as the number of training samples gets large enough, our models seem to stop giving the analytic answer above and instead learn some approximate field that lets them generate new images! I think it's a very interesting topic.
