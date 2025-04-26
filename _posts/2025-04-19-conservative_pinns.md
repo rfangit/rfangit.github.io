@@ -307,7 +307,7 @@ The second reason is that lots of problems can be mapped to conservative vector 
 An example of personal interest to me is the flow-matching objective, used in a lot of generative modelling. For MSEloss, the analytic solution for the velocities from flow-matching is given by
 
 $$
-v(\vec{x}, t) = \vec{x} C_0 (t) + C_1 (t) \times \left( \sum_{i} P_{softmax}(C_2 (t) (\vec{x} - C_3 (t) \vec{u}_i )^2)  \left( \vec{x} - C_3 (t)\vec{u}_i \right)
+v(\vec{x}, t) = \vec{x} C_0 (t) + C_1 (t) \times \left( \sum_{i} P_{softmax}(C_2 (t) (\vec{x} - C_3 (t) \vec{u}_i )^2)  \left( \vec{x} - C_3 (t)\vec{u}_i \right) \right)
 $$
 
 where $C_0, C_1, C_2, C_3$ are complicated time-dependent functions that depend on the scheduling used in training (eg, most flow-matching purposes use a linear schedule), and $\vec{u}_i$ are vectors that represent our actual data used to train the model. The terms in front are pretty simple, and the machine learning magic occurs in estimating
