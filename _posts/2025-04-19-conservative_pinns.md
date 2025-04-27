@@ -56,19 +56,17 @@ The code and experimental results for this post are available on [github.](https
 
 ## Introduction
 
-Physics-Informed Neural Networks (PINNs) incorporate physical laws into their architecture, loss functions, or training process to better model physical systems. A prominent example is [**Hamiltonian Neural Networks**](https://arxiv.org/pdf/1906.01563v1){:target="_blank"}, which uses coordinates $(x_1, x_2, ..., x_n)$ to predict a scalar $U(x_1, ..., x_n)$. Automatic differentiation is used to compute gradients $\left(\frac{dU}{dx_1}, ..., \frac{dU}{dx_n}\right)$.
+[**Hamiltonian Neural Networks**](https://arxiv.org/pdf/1906.01563v1){:target="_blank"} are a type of physics informed neural network, or PINN. Their predictions result in more physically accurate simulations since they conserve energy, making them attractive for physics purposes.
 
-This guarantees predictions (using the gradients) will obey fundamental physical laws. For Hamiltonian networks, the equations enforce **energy conservation**. In contrast, a neural network trained to directly predict the gradients from data will not necessarily conserve energy, resulting in poor accuracy in predicting the time evolution of physical systems.
+They work by using coordinates $(x_1, x_2, ..., x_n)$ to predict a scalar $U(x_1, ..., x_n)$, and then automatic differentiation computes the gradients $\left(\frac{dU}{dx_1}, ..., \frac{dU}{dx_n}\right)$ which are compared to training data. This differential structure guarantees its predictions will conserve energy, whereas a network that predict gradients directly generally does not conserve energy.
 
-The trade-off is that this approach only works on systems with known physical laws, which is not a problem in physics applications.
+In the original paper, the authors mentioned there were negligible differences in the test/train losses for a baseline NN and the Hamiltonian NN. It is only when the networks are used for a long time that the differences in energy conservation become apparent.
 
-The underlying principle here is not new. It is well known that different network architectures are better suited to different problems, such as convolutional neural networks which take advantage of the translational invariance found in images. A conservative vector field like the ones trained by Hamiltonian networks also have their own invariants, where any closed line integral over the vector field is 0 - a more abstract and seemingly less powerful condition than translational invariance.
+But is that really true? 
 
-### Training Speed
+## Training Speed
 
-The improved accuracy of Hamiltonian Neural Networks is well known. What about training speed?
-
-Intuitively, learning one scalar function $U$ seems easier than learning $d$ separate gradient components. Yet the original Hamiltonian NN paper found **negligible differences** in training and test loss compared to baseline networks.
+In their paper, they mainly conducted experiments for low-dimensional problems. The only case that the Hamiltonian NN showed significant improvement was also the only one with more than 2 system coordinates (the 2-body problem has 4 spatial and momentum coordinates, for a total of 8 coordinates).
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -84,13 +82,16 @@ Intuitively, learning one scalar function $U$ seems easier than learning $d$ sep
     <strong>Figure:</strong> Train and test losses, as well as energy conservation results from the original Hamiltonian Neural Network paper. Train and test losses between the baseline and the Hamiltonian network are similar except for the real pendulum and two-body problem. In the real pendulum, energy is not conserved so the conditions for a Hamiltonian are not satisfied. The two-body problem has a larger dimension than the other toy problems studied here ($d = 8$ with four spatial coordinates for the two bodies, and four velocity components, whereas the others only have 2 dimensions), which may explain the difference in it's performance.
 </div>
 
-However, their experiments focused on mainly *low-dimensional* systems, where the conservative constraint is least restrictive. As an extreme example, any 1D function could be written as $dU/dx$ for some $U$, rendering the advantage of such a formulation moot. In theory, high dimensional systems should display clearer advantages.
+Hamiltonian NNs work by learning a single scalar function $U$ instead of $d$ separate gradient components. In theory, this suggests we should observe more significant speedups when the dimension of the problem is increased, which explains the results in the previous paper.
 
-In this blog post, we test whether higher dimensions reveal clearer advantages in training speed through a toy conservative vector field problem.
+In practice, maybe automatic differentiation is too numerically unstable, or the scaling is too minor: it's well known neural networks scale really well with high dimensions (growing polynomially instead of exponentially) so the effect of this differential structure may be too minor. 
+
+In this blog post, we'll test whether higher dimensions reveal clearer advantages in training speed through a toy conservative vector field problem.
 
 ## Experiment Design
 
 Our question: Does a network with the inductive bias of a conservative vector field built in via the gradient procedure in Hamiltonian Neural Networks train faster than a baseline network as dimensionality increases?
+
 ### The Toy Problem
 
 We construct a $d$-dimensional problem with inputs being coordinates $\vec{x} = (x_1, ..., x_d)$ in $[-1,1]^d$, and a target output vector field $f(\vec{x})$ derived from a sum of Gaussians:
