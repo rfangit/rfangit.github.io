@@ -56,7 +56,7 @@ The code and experimental results for this post are available on [github.](https
 
 ## Introduction
 
-[**Hamiltonian Neural Networks**](https://arxiv.org/pdf/1906.01563v1){:target="_blank"} are a type of physics informed neural network, or PINN. Their predictions result in more physically accurate simulations since they conserve energy, making them attractive for physics purposes.
+[**Hamiltonian Neural Networks**](https://arxiv.org/pdf/1906.01563v1){:target="_blank"} are a type of physics informed neural network (PINN). Their predictions result in more physically accurate simulations since they conserve energy, making them attractive for physics purposes.
 
 They work by using coordinates $(x_1, x_2, ..., x_n)$ to predict a scalar $U(x_1, ..., x_n)$, and then automatic differentiation computes the gradients $\left(\frac{dU}{dx_1}, ..., \frac{dU}{dx_n}\right)$ which are compared to training data. This differential structure guarantees its predictions will conserve energy, whereas a network that predict gradients directly generally does not conserve energy.
 
@@ -66,7 +66,7 @@ But is that really true?
 
 ## Training Speed
 
-In their paper, they mainly conducted experiments for low-dimensional problems. The only case that the Hamiltonian NN showed significant improvement was also the only one with more than 2 system coordinates (the 2-body problem has 4 spatial and momentum coordinates, for a total of 8 coordinates).
+In the original paper, experiments were done for mostly low-dimensional problems. The only case that the Hamiltonian NN showed significant improvement was also the only one with more than 2 system coordinates (the 2-body problem has 4 spatial and momentum coordinates, for a total of 8 coordinates).
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -82,9 +82,9 @@ In their paper, they mainly conducted experiments for low-dimensional problems. 
     <strong>Figure:</strong> Train and test losses, as well as energy conservation results from the original Hamiltonian Neural Network paper. Train and test losses between the baseline and the Hamiltonian network are similar except for the real pendulum and two-body problem. In the real pendulum, energy is not conserved so the conditions for a Hamiltonian are not satisfied. The two-body problem has a larger dimension than the other toy problems studied here ($d = 8$ with four spatial coordinates for the two bodies, and four velocity components, whereas the others only have 2 dimensions), which may explain the difference in it's performance.
 </div>
 
-Hamiltonian NNs work by learning a single scalar function $U$ instead of $d$ separate gradient components. In theory, this suggests we should observe more significant speedups when the dimension of the problem is increased, which explains the results in the previous paper.
+Hamiltonian NNs work by learning a single scalar function $U$ instead of $d$ separate gradient components. In theory, this suggests we should observe more significant speedups when the dimension of the problem is increased, which could explain the results in the previous paper.
 
-In practice, maybe automatic differentiation is too numerically unstable, or the scaling is too minor: it's well known neural networks scale really well with high dimensions (growing polynomially instead of exponentially) so the effect of this differential structure may be too minor. 
+In practice, automatic differentiation could be too numerically unstable, or the scaling is too minor: it's well known neural networks scale really well with high dimensions (growing polynomially instead of exponentially) so the effect of this differential structure may be too minor. 
 
 In this blog post, we'll test whether higher dimensions reveal clearer advantages in training speed through a toy conservative vector field problem.
 
@@ -293,46 +293,16 @@ In our experiments, this makes our conservative networks take roughly twice as l
     <strong>Figure:</strong> Taking into account the automatic differentiation needed to evaluate conservative networks roughly doubles the time per epoch, we compare conservative networks with the baseline. There are some slight advantages even in the larger networks, but the increased computational cost removes most advantages in training speed.
 </div>
 
-**Note:** It's not clear to me that this slowdown is fundamental and can't be sped up with some clever gradient accumulation, so this problem may be fixable.
+**Note:** It's not clear to me that this slowdown is fundamental and can't be sped up with clever gradient accumulation, so this problem may be fixable.
 
 These findings suggest the gains by a conservative architecture in speeding up training speeds is relatively modest, especially when training large networks. The advantages are larger for smaller networks.
 
 ## Closing Thoughts
 
-There are two reasons I started looking into this.
+Although the original paper on Hamiltonian Neural Networks focused on many simple low-dimensional problems, many interesting problems in physics are very high dimensional. Since the conservative vector field bias built-in Hamiltonian Neural Networks intrinsically scales with dimension, I thought they could turn out to be extemely useful if they scaled very well.
 
-The first reason was pretty academic: Inductive biases like translational invariance are very powerful in neural networks, such as CNNs, and these biases show great advantages in training speed. A conservative vector field seems like a weaker inductive bias, but it's not clear how much weaker it is. How much weaker is one of the questions I set out to answer here.
+For example, convolutional neural networks make use of translational invariance and demonstrate large advantages in tasks with such symmetries (eg, most computer vision tasks). While such speedups would be unlikely for Hamiltonian Neural Networks (the conservative constraint seems much weaker than translational invariance), it does leave some hope that they might scale well in a meaningful way.
 
-The second reason is that lots of problems can be mapped to conservative vector fields. Therefore if there was a significant speedup, it would make sense to map problems to a conservative vector field and learn there.
+Sadly, our results show that while speed benefits appear in higher dimensions, they are relatively modest. As an (unproven) explanation, it seems the natural ability of neural networks to perform extremely well in high dimensions suppresses the modest dimensional scaling of a conservative vector field. Furthermore, difficulties with multiple uses of automatic differentiation make the modest benefits in training speed fairly negligible, barring the most extreme cases.
 
-An example of personal interest to me is the flow-matching objective, used in a lot of generative modelling. For MSEloss, the analytic solution for the velocities from flow-matching is given by
-
-$$
-v(\vec{x}, t) = \vec{x} C_0 (t) + C_1 (t) \times \left( \sum_{i} P_{softmax}(C_2 (t) (\vec{x} - C_3 (t) \vec{u}_i )^2)  \left( \vec{x} - C_3 (t)\vec{u}_i \right) \right)
-$$
-
-where $C_0, C_1, C_2, C_3$ are complicated time-dependent functions that depend on the scheduling used in training (eg, most flow-matching purposes use a linear schedule), and $\vec{u}_i$ are vectors that represent our actual data used to train the model. The terms in front are pretty simple, and the machine learning magic occurs in estimating
-
-$$
-\sum_{i} P_{softmax}(C_2(\vec{x} - C_3 (t) \vec{u}_i )^2) \left( \vec{x} - C_3 (t)\vec{u}_i \right)
-$$
-
-which moves directly towards data points, weighted by the softmax of the distance squared. This term is magic, because as the number of training samples gets large enough, our models seem to stop giving the analytic answer above and instead learn some approximate answer that lets them generate new images! I think it's a very interesting topic.
-
-Recalling that softmax is given by
-
-$$
-P(x) = \frac{e^{-x}}{\sum_x e^{-x}}
-$$
-
-and ignoring the denominator assuming it's large or doesn't change much, the machine learning part of this problem looks a lot like a conservative vector field of the form
-
-$$
-\frac{d U}{d \vec{x}} = e^{-\vec{x}^2} \times \vec{x}
-$$
-
-which seems related to [some recent work on treating the flow from flow-matching as approximately curl-free.](https://arxiv.org/pdf/1906.01563v1){:target="_blank"}
-
-Sadly the assumption there (ignoring the denominator) doesn't seem to work well(?), and the speedup isn't really significant enough to be more useful. More on this view of flow-matching in a later blog post.
-
-If you found the contents of this blog post useful, or have any questions, please feel free to leave a comment!
+If you found the contents of this blog post useful, or have any questions, please feel free to leave a comment.
