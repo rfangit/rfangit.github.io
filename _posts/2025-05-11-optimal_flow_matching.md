@@ -129,7 +129,7 @@ $$
 \text{Softmax}_{\vec{x}} = \frac{e^{\vec{x}}}{\sum_{\vec{x}} e^{\vec{x}}}
 $$
 
-For the derivation, see this [appendix.]({{ site.baseurl }}An_Analytical_Solution_To_Flow_Matching___Appendix.pdf){:target="_blank"}.
+For the derivation, see this [appendix.](https://github.com/rfangit/analytical_flow_matching/blob/main/Optimal_Flow_Matching___Appendix.pdf){:target="_blank"}
 
 This algorithm is easy to interpret. At any time, the ideal flow checks the $L_2$ distance between the current point and all training data points, multiplied by a time dependent factor. The softmax turns this into a distribution, and it moves directly to the expected endpoint $\langle \mu \rangle$ of this distribution. The $1/(1 - t)$ term means that single-step integration from this point takes it directly to this expected end point.
 
