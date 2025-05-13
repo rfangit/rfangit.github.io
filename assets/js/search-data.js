@@ -23,7 +23,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/blog/";
           },
-        },{id: "post-do-conservative-pinns-train-faster-in-high-dimensions",
+        },{id: "post-optimal-flow-matching",
+        
+          title: "Optimal Flow-Matching",
+        
+        description: "",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/optimal_flow_matching/";
+          
+        },
+      },{id: "post-do-conservative-pinns-train-faster-in-high-dimensions",
         
           title: "Do Conservative PINNs Train Faster In High Dimensions?",
         
