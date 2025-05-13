@@ -54,7 +54,7 @@ _styles: >
   }
 ---
 
-The code and experimental results for this post are available on [github.](https://github.com/rfangit/analytical_flow_matching/){:target="_blank"}
+The implementation of the solution for various datasets are available on [github.](https://github.com/rfangit/analytical_flow_matching/){:target="_blank"}
 
 ## Introduction
 
@@ -112,7 +112,7 @@ $$
 \implies \vec{v}_{m} (\vec{x}, t) = \langle \vec{v_{s}} \rangle_{\vec{x}, t}
 $$
 
-which can be calculated by integrating over the distribution of inputs and outputs $P(\vec{x_i}, \vec{x_f})$ conditioned on points $\vec{x_i}, \vec{x_f}$ contributing to the velocity at point $\vec{x}, t$. This integral can be simplified to obtain useful solutions if we impose constraints on the distributions (eg, our inputs are Gaussian noise).
+which can be calculated by integrating over the distribution of inputs and outputs $P(\vec{x_i}, \vec{x_f})$ conditioned on points $\vec{x_i}, \vec{x_f}$ contributing to the velocity at point $\vec{x}, t$. This integral can be simplified if we impose constraints on the distributions (eg, our inputs are Gaussian noise).
 
 ## Optimal Solution
 
@@ -131,7 +131,7 @@ $$
 
 For the derivation, see this [appendix.]({{ site.baseurl }}An_Analytical_Solution_To_Flow_Matching___Appendix.pdf){:target="_blank"}.
 
-This formula is easy to interpret. At any time, the ideal flow checks the $L_2$ distance between the current point and all training data points, multiplied by a time dependent factor. The softmax turns this into a distribution, and it moves directly to the expected endpoint $\langle \mu \rangle$ of this distribution. The $1/(1 - t)$ term means that single-step integration from this point takes it directly to this expected end point.
+This algorithm is easy to interpret. At any time, the ideal flow checks the $L_2$ distance between the current point and all training data points, multiplied by a time dependent factor. The softmax turns this into a distribution, and it moves directly to the expected endpoint $\langle \mu \rangle$ of this distribution. The $1/(1 - t)$ term means that single-step integration from this point takes it directly to this expected end point.
 
 The two drawbacks of ideal diffusion denoisers are present here:
 
@@ -139,7 +139,7 @@ The two drawbacks of ideal diffusion denoisers are present here:
 
 - It memorizes the training data. As $t \rightarrow 1$, the velocity points directly to the closest data point (as the softmax penalizes more distant points). As a result, it only generates points at $t = 1$ that exist in the training data.
 
-Despite this, such a formula may be helpful in interpreting how denoising generative models behave. For example, at $t = 0$, all our data points become identical and models always move to the mean of the training data, which can be easily confirmed. As $t \rightarrow 1$, our flows begin to distinguish different data points and more fine features become pronounced.
+Despite this, such an algorithm may be helpful in interpreting how denoising generative models behave. For example, at $t = 0$, all our data points become identical and models always move to the mean of the training data, which can be easily confirmed. As $t \rightarrow 1$, our flows begin to distinguish different data points and more fine features become pronounced.
 
 ## Examples With Code
 
@@ -172,7 +172,7 @@ This algorithm has been implemented in this [github repo with example uses.](hht
     <strong>Figure:</strong> Examples of the analytic denoiser on Gaussian noise for MNIST, CIFAR-10, and Imagenet.
 </div>
 
-With this formula, one can denoise images very quickly for small datasets, but the resulting images are nearly identical to training examples. It's incapable of generating new images.
+With this algorithm, one can denoise images very quickly for small datasets, but the resulting images are nearly identical to training examples. It's incapable of generating new images.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0" style="max-width: 600px; margin: 0 auto;">  
@@ -202,7 +202,7 @@ Since the ideal flow minimizes the MSEloss, one can compute the minimal training
 
 This occurs because there is greatest variance in the velocity at the start, where all output images seem possible. As time progresses, very few images are likely and the softmax becomes dominated by a specific training example. 
 
-This can be seen explicitly when plotting our formulas prediction for the final image at a given time, where they initially predict a blurry image corresponding to the average but very quickly decide on the final image. More training data should ensure the variance stays large for larger $t$ values.
+This can be seen explicitly when plotting our algorithms prediction for the final image at a given time, where they initially predict a blurry image corresponding to the average but very quickly decide on the final image. More training data should ensure the variance stays large for larger $t$ values.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0" style="max-width: 500px; margin: 0 auto;">  
@@ -236,7 +236,7 @@ This behavior is very different for toy 2D distributions often used to visualize
 
 ## What Do Models Actually Do?
 
-For networks trained on large amounts of data, it is unlikely they have the capacity in their weights to store all their training data. Although this formula minimizes the loss, it cannot describe the behavior of networks except in the memorization regime that occurs with a small number of samples. <d-cite key="ambrogioni2023searchdispersedmemoriesgenerative"></d-cite>
+For networks trained on large amounts of data, it is unlikely they have the capacity in their weights to store all their training data. Although this algorithm minimizes the loss, it cannot describe the behavior of networks except in the memorization regime that occurs with a small number of samples. <d-cite key="ambrogioni2023searchdispersedmemoriesgenerative"></d-cite>
 
 There exists a large body of work trying to understand how these models behave outside of the memorization regime, such as the appearance of geometric harmonic bases <d-cite key="kadkhodaie2024generalizationdiffusionmodelsarises"></d-cite> , and translational invariance and locality inherited from convolutional neural networks. <d-cite key="kamb2024analytictheorycreativityconvolutional"></d-cite>
 
@@ -253,7 +253,7 @@ Near $t = 0$, this term is easy to approximate since all data points $\vec{\mu}_
 
 On the other hand, $t = 1$ appears difficult to approximate since all data points have separated and the softmax is dominated by the closest point, for which there are many candidates. The resolution to this paradox is that $\vec{x}$ near $t = 1$ is not random noise, but very close to the training data $\vec{\mu}_j$. Therefore our model can use cues present in $\vec{x}$ at this step to make a good guess towards the expected value of the softmax, or direction of flow.
 
-What these cues are and how the model learns them do not seem explainable from the formula, but rather dependent on features of the data and model architecture.
+What these cues are and how the model learns them do not seem explainable from the algorithm, but rather dependent on features of the data and model architecture.
 
 ## Generalizations
 
