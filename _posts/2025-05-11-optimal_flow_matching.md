@@ -79,7 +79,7 @@ Flow-matching is a new formulation of generative modeling using the language of 
     </div>
 </div>
 <div class="caption">
-    <strong>Figure:</strong> A common toy example in flow-matching is to match a 2D isotropic Gaussian to a checkerboard distribution.
+    <strong>Figure:</strong> A common toy example in flow-matching is to match a 2D isotropic Gaussian (blue) to a checkerboard distribution (red).
 </div>
 
 ## Flow-Matching
