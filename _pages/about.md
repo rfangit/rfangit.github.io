@@ -25,9 +25,9 @@ latest_posts:
 
 I completed my PhD in Physics (2024) at the [University of Toronto](https://www.utoronto.ca/).
 
-My research was on stochastic biochemical networks, applying mathematical techniques to analyze probability distributions of cells driven by dynamical systems, alongside information theory and gillespie simulations. While it was technically challenging work, none of it will see direct application in this decade.
+My research was on stochastic biochemical networks. I applied mathematical techniques and simulations to analyze probability distributions of cells driven by dynamical systems. While it was technically challenging work, none of it will see direct application in this decade.
 
-A brief stint as a software developer after graduating made me realize how much impact recent advancements in AI will have. In our lifetimes, we will see a societal transition where most forms of human labor today will be automated by learning algorithms. Furthermore, many of the technical skills I'd developed during my PhD actually lie at the heart of this artificial intelligence boom, revolving around modelling distributions (data or weights) driven by various learning algorithms. 
+A brief stint as a software developer after graduating made me realize how much impact recent advancements in AI will have. Learning algorithms have the potential to automate many forms of human labor. Many of the technical skills I've developed in my PhD happen to be extremely relevant to this as well, revolving around modelling distributions (data or weights) driven by various learning algorithms. 
 
 That is where my current interests lie, applying my expertise modelling stochastic processes to generative modeling, particularly diffusion models and flow-matching. I believe there's room to better understand how these models really work, accelerate training and inference, and apply them to scientific discovery.
 
