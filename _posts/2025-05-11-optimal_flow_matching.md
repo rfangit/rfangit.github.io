@@ -79,7 +79,7 @@ Flow-matching is a new formulation of generative modeling using the language of 
     </div>
 </div>
 <div class="caption">
-    <strong>Figure:</strong> A common toy example in flow-matching is to match a 2D isotropic Gaussian (blue) to a checkerboard distribution (red).
+    A common toy example in flow-matching is to match a 2D isotropic Gaussian (blue) to a checkerboard distribution (red).
 </div>
 
 ## Flow-Matching
@@ -169,7 +169,7 @@ This algorithm has been implemented in this [github repo with example uses.](htt
     </div>
 </div>
 <div class="caption">
-    <strong>Figure:</strong> Examples of the analytic denoiser on Gaussian noise for MNIST, CIFAR-10, and Imagenet.
+    Examples of the analytic denoiser on Gaussian noise for MNIST, CIFAR-10, and Imagenet.
 </div>
 
 With this algorithm, one can denoise images very quickly for small datasets, but the resulting images are nearly identical to training examples. It's incapable of generating new images.
@@ -183,7 +183,7 @@ With this algorithm, one can denoise images very quickly for small datasets, but
     </div>
 </div>
 <div class="caption">
-    <strong>Figure:</strong> Although the ideal denoiser requires no training, all outputs are identical to images in the training data.
+    Although the ideal denoiser requires no training, all outputs are identical to images in the training data.
 </div>
 
 Since the ideal flow minimizes the MSE loss, one can compute the minimal training loss. This seems most enlightening when plotted as a function of $t$, where one observes that the loss is maximal near $t = 0$ and steadily decreases.
@@ -197,7 +197,7 @@ Since the ideal flow minimizes the MSE loss, one can compute the minimal trainin
     </div>
 </div>
 <div class="caption">
-    <strong>Figure:</strong> Optimal MSE loss at various parameters of $t$ for training MNIST and CIFAR-10. The loss at high values of $t$ is small since contributions to the velocity come mostly from a single sample, which the optimal denoiser has memorized. Losses were calculated using $400$ randomly generated points at each value of $t$. 
+    Optimal MSE loss at various parameters of $t$ for training MNIST and CIFAR-10. The loss at high values of $t$ is small since contributions to the velocity come mostly from a single sample, which the optimal denoiser has memorized. Losses were calculated using $400$ randomly generated points at each value of $t$. 
 </div>
 
 This occurs because there is greatest variance in the velocity at the start, where all output images seem possible. As time progresses, very few images are likely and the softmax becomes dominated by a specific training example. 
@@ -215,7 +215,7 @@ This can be seen explicitly when plotting our algorithms prediction for the fina
     </div>
 </div>
 <div class="caption">
-    <strong>Figure:</strong> Optimal denoiser predictions for the final image for MNIST and CIFAR-10. Note that the optimal algorithm initially predicts the average of the training data, but quickly decides on which of the memorized samples corresponds to the input.
+    Optimal denoiser predictions for the final image for MNIST and CIFAR-10. Note that the optimal algorithm initially predicts the average of the training data, but quickly decides on which of the memorized samples corresponds to the input.
 </div>
 
 This behavior is very different for toy 2D distributions often used to visualize flow-matching algorithms such as circles, checkerboards or spiral distributions, where the loss is non-monotonic.
@@ -231,7 +231,7 @@ This behavior is very different for toy 2D distributions often used to visualize
     </div>
 </div>
 <div class="caption">
-    <strong>Figure:</strong> Optimal MSE loss at various parameters of $t$ for training common 2D toy distributions (matching a Gaussian to a circle or a checkerboard). Unlike the high dimensional problems earlier, the loss behaves non-monotonically. Losses were calculated using $40,000$ randomly generated points at each value of $t$.
+    Optimal MSE loss at various parameters of $t$ for training common 2D toy distributions (matching a Gaussian to a circle or a checkerboard). Unlike the high dimensional problems earlier, the loss behaves non-monotonically. Losses were calculated using $40,000$ randomly generated points at each value of $t$.
 </div>
 
 ## What Do Models Actually Do?
@@ -290,10 +290,10 @@ which represents a case where Gaussian noise is added to our training data.
     </div>
 </div>
 <div class="caption">
-    <strong>Figure:</strong> Optimal flow-matching from a 2D Gaussian to a series of points on a line with a nonlinear schedule $\alpha = 1 - t^{2}, \beta = t^{2}$ and allowing for variance in the output $\sigma_f > 0$.
+    Optimal flow-matching from a 2D Gaussian to a series of points on a line with a nonlinear schedule $\alpha = 1 - t^{2}, \beta = t^{2}$ and allowing for variance in the output $\sigma_f > 0$.
 </div>
 
-The case of non-isotropic Gaussians can be found in the appendix, section 3.1.
+The case of non-isotropic Gaussians can be found in the [appendix, section 3.1.](https://github.com/rfangit/analytical_flow_matching/blob/main/Optimal_Flow_Matching___Appendix.pdf){:target="_blank"}
 
 Recent work has noted that far away from the data manifold the trajectories move in straight curl-free paths. <d-cite key="balcerak2025energymatchingunifyingflow"></d-cite> I was curious if the optimal vector fields generated by flow-matching might always be conservative (and thus curl free) even close to the data manifold. If this was true, then the problem could be modeled via a time-dependent energy, which might simplify training.
 
