@@ -316,7 +316,7 @@ On a side note, the optimal loss is very small at high $t$ values because the op
 
 ## Acknowledgements
 
-My interest in this topic was heavily influenced by this blog post, [Flow With What You Know](https://drscotthawley.github.io/blog/posts/FlowModels.html){:target="_blank"}, by Scott Hathaway. Many kind thanks to Scott Hathaway and Sander Dieleman for their generosity in answering questions and sharing background knowledge on this topic.
+My interest in this topic was heavily influenced by this blog post, [Flow With What You Know](https://drscotthawley.github.io/blog/posts/FlowModels.html){:target="_blank"}, by Scott Hawley. Many kind thanks to Scott Hawley and Sander Dieleman for their generosity in answering questions and sharing background knowledge on this topic.
 
 If you find this post useful in your research or teaching, please consider citing it:
 
