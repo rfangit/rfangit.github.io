@@ -301,7 +301,7 @@ Sadly the optimal flow is not always conservative. This can be calculated explic
 
 ## Closing Thoughts
 
-In my personal (and completely unfounded) opinion, for well-defined problems that we know how to solve, we shouldn't use learning algorithms like neural networks because they are slow, require lots of data and take a long time to train. A lot of problems in math, physics and computer science have these nice solutions. But sadly there are a lot of ill-defined problems which we have no idea how to solve.
+In my personal opinion, for well-defined problems that we know how to solve, we shouldn't use learning algorithms like neural networks because they are slow, require lots of data and take a long time to train. A lot of problems in math, physics and computer science have these nice solutions. But sadly there are a lot of ill-defined problems which we have no idea how to solve.
 
 Flow-matching caught my attention since the formalism is very simple - it can be understood in the language of 2nd year physics and ODEs, and there is indeed an optimal analytic solution. Unfortunately this solution doesn't have the useful properties that ones produced by deep learning do.
 
