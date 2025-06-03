@@ -5,7 +5,6 @@ description: Clarifying a common misunderstanding when applying information theo
 tags: biology information-theory math
 giscus_comments: true
 date: 2025-04-09
-featured: true
 mermaid:
   enabled: true
   zoomable: true

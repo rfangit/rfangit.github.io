@@ -5,7 +5,6 @@ description: Alternatively, how strong is a conservative vector field as an indu
 tags: code math artificial-intelligence
 giscus_comments: true
 date: 2025-04-23
-featured: true
 mermaid:
   enabled: true
   zoomable: true

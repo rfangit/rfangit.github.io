@@ -5,7 +5,6 @@ description:
 tags: code math artificial-intelligence
 giscus_comments: true
 date: 2025-05-11
-featured: true
 mermaid:
   enabled: true
   zoomable: true
