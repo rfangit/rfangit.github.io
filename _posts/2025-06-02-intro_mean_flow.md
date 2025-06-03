@@ -3,7 +3,6 @@ layout: distill
 title: Introduction to Mean Flow
 description:  
 tags: code math artificial-intelligence
-giscus_comments: true
 date: 2025-06-02
 mermaid:
   enabled: true

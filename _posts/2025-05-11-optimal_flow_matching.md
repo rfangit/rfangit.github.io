@@ -3,7 +3,6 @@ layout: distill
 title: Optimal Flow-Matching
 description:  
 tags: code math artificial-intelligence
-giscus_comments: true
 date: 2025-05-11
 mermaid:
   enabled: true
