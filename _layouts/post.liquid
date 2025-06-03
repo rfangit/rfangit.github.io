@@ -87,12 +87,4 @@ layout: default
     {% endif %}
   {% endif %}
 
-{% comment %}
-{% if site.disqus.shortname %}
-  {% include disqus_comments.html %}
-{% endif %}
-  {% if site.giscus and page.giscus_comments %}
-    {% include giscus.liquid %}
-  {% endif %}
-{% endcomment %}
 </div>
