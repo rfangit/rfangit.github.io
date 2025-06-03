@@ -23,7 +23,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/blog/";
           },
-        },{id: "post-optimal-flow-matching",
+        },{id: "post-introduction-to-mean-flow",
+        
+          title: "Introduction to Mean Flow",
+        
+        description: "",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/intro_mean_flow/";
+          
+        },
+      },{id: "post-optimal-flow-matching",
         
           title: "Optimal Flow-Matching",
         
