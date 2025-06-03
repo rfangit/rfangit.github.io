@@ -58,7 +58,7 @@ This tutorial is implemented as a [google colab notebook](https://colab.research
 
 ## Introduction
 
-"Mean Flows for One-step Generative Modeling" is a new idea to modify flow matching for 1 step generation. In this tutorial post, we'll introduce the basics and an example implementation for standard 2d toy flow matching problems. Do consider reading the original paper for more details.
+["Mean Flows for One-step Generative Modeling"](https://arxiv.org/abs/2505.13447v1){:target="_blank"} is a new idea to modify flow matching for 1 step generation. In this tutorial post, we'll introduce the basics and an example implementation for standard 2d toy flow matching problems. Do consider reading the original paper for more details.
 
 ## Flow Matching
 
