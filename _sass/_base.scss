@@ -622,6 +622,46 @@ footer.sticky-bottom {
   }
 }
 
+.blog-list.minimalist {
+  /* Styles for the container */
+  margin: 0 auto;
+  max-width: 700px; /* limit max width for better reading */
+  padding: 1rem;
+}
+
+.post-list.compact {
+  margin: 0;
+  padding: 0;
+  list-style: none; /* remove default bullets */
+}
+
+.post-list.compact li {
+  border: none; /* remove borders */
+  padding: 0.25rem 0; /* less vertical spacing */
+  font-size: 0.95rem; /* smaller font size */
+  display: flex;
+  gap: 0.75rem; /* space between date and title */
+}
+
+.post-list.compact li .post-date {
+  color: #222; /* Darker date color */
+  font-style: italic;
+  font-weight: 600; /* semi-bold */
+  flex-shrink: 0;
+  width: 90px;
+  font-size: 0.9rem;
+}
+
+.post-list.compact li .post-link {
+  text-decoration: underline; /* underline post title */
+  font-weight: 600; /* semi-bold */
+  color: #000;
+}
+
+.post-list.compact li .post-link:hover {
+  color: #007acc; /* subtle hover color */
+}
+
 .pagination {
   .page-item {
     .page-link {

@@ -88,8 +88,8 @@ bing_site_verification: # out your bing-site-verification ID (Bing Webmaster)
 # Blog
 # -----------------------------------------------------------------------------
 
-blog_name: Raymond Fan's Blog # blog_name will be displayed in your blog page
-blog_description: a blog about interdisciplinary topics I've worked on
+blog_name: Blog # blog_name will be displayed in your blog page
+blog_description: Math, machine learning, physics
 permalink: /blog/:year/:title/
 lsi: false # produce an index for related posts
 
