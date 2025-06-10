@@ -29,10 +29,9 @@ toc:
   - name: Introduction
   - name: Flow Matching
   - name: Mean Flow
-  - name: 
-  - name: What do models actually do?
-  - name: Generalizations
-  - name: Closing Thoughts
+  - name: Mean Flow Code
+  - name: Example - 2D
+  - name: Results
 
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.

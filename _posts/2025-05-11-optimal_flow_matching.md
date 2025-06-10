@@ -129,10 +129,10 @@ $$
 \text{Softmax}_{\vec{\mu}_j}\left(-\frac{1}{2} \frac{\left(\vec{x} - \vec{\mu}_{j} t \right)^2}{(1 - t)^2 \sigma_i} \right) - \vec{x} \right)
 $$
 
-where we have additionally assumed the schedule is linear. $\text{Softmax}_{\vec{\mu}_j}$ refers to the output of the softmax function, given by
+where we have additionally assumed the schedule is linear. $\text{Softmax}_{\vec{x}} \left(f(\vec{x}) \right)$ is the softmax probability distribution formed from the vectors $\vec{x}$, given by
 
 $$
-\text{Softmax}_{\vec{x}} = \frac{e^{\vec{x}}}{\sum_{\vec{x}} e^{\vec{x}}}
+\text{Softmax}_{\vec{x}}\left(f(\vec{x}) \right) = \frac{e^{f(\vec{x})}}{\sum_{\vec{x}} e^{f(\vec{x})}}
 $$
 
 For the derivation, see this [appendix.](https://github.com/rfangit/analytical_flow_matching/blob/main/Optimal_Flow_Matching___Appendix.pdf){:target="_blank"}
