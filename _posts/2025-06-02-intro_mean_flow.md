@@ -30,7 +30,7 @@ toc:
   - name: Flow Matching
   - name: Mean Flow
   - name: Mean Flow Code
-  - name: Example - 2D
+  - name: 2D Example
   - name: Results
 
 # Below is an example of injecting additional post-specific styles.
@@ -269,7 +269,7 @@ def train_mean_model(model, source_data_function, target_data_function, n_epochs
 
 And that's it!
 
-## Example - 2D
+## 2D Example
 
 We'll demonstrate mean flow on several 2D distributions.
 
