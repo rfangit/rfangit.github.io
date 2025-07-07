@@ -23,13 +23,11 @@ latest_posts:
   limit: 3 # leave blank to include all the blog posts
 ---
 
-I completed my PhD in Physics (2024) at the [University of Toronto](https://www.utoronto.ca/).
+I completed my PhD in Physics (2024) at the [University of Toronto](https://www.utoronto.ca/). I currently work as a Research Scientist at a research-focused startup, [AI Leap](https://www.aileap.org/).
 
-My research was on stochastic biochemical networks. I applied mathematical techniques and simulations to analyze probability distributions of cells driven by dynamical systems. While it was technically challenging work, none of it will see direct application in this decade.
+My research focuses on understanding generalization in neural networks. There are rich dynamics in high dimensional parameter space that are critical to understanding how to make 'intelligent' networks, such as the phase transition from memorization to generalization.
 
-A brief stint as a software developer after graduating made me realize how much impact recent advancements in AI will have. Learning algorithms have the potential to automate many forms of human labor. Many of the technical skills I've developed in my PhD happen to be extremely relevant to this as well, revolving around modelling distributions (data or weights) driven by various learning algorithms. 
-
-That is where my current interests lie, applying my expertise modelling stochastic processes to generative modeling, particularly diffusion models and flow-matching. I believe there's room to better understand how these models really work, accelerate training and inference, and apply them to scientific discovery.
+These problems relate heavily to my expertise from my PhD in modelling complex stochastic processes, and I am developing approaches to enhance the ability of models to generalize even on small datasets. 
 
 If you have any questions for me, happy to have a chat.
 
