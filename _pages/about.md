@@ -23,11 +23,11 @@ latest_posts:
   limit: 3 # leave blank to include all the blog posts
 ---
 
-I completed my PhD in Physics (2024) at the [University of Toronto](https://www.utoronto.ca/). I currently work as a Research Scientist at a research-focused startup, [AI Leap](https://www.aileap.org/).
+I completed my PhD in Physics (2024) at the [University of Toronto](https://www.utoronto.ca/), studying information transfer in biological networks. I currently work as a Research Scientist at a research-focused startup, [AI Leap](https://www.aileap.org/).
 
-My research focuses on understanding generalization in neural networks. There are rich dynamics in high dimensional parameter space that are critical to understanding how to make 'intelligent' networks, such as the phase transition from memorization to generalization.
+My work focuses on understanding why large networks develop internal representations that support generalization. This research can help us build more 'intelligent' models that are more in line with our goals, rather than the hard-to-interpret and expensive models of today.
 
-These problems relate heavily to my expertise from my PhD in modelling complex stochastic processes, and I am developing approaches to enhance the ability of models to generalize even on small datasets. 
+My personal view is towards information theoretic explanations around flat minima, and compression (eg, minimum description length, Kolmogorov complexity). Gradient descent is 'lazy' and finds flat minima, which happens to coincide with generalization to some degree. Understanding this in detail will enable us to build better models even with limited datasets, such as ARC-AGI.
 
 If you have any questions for me, happy to have a chat.
 
