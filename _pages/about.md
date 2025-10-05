@@ -23,11 +23,11 @@ latest_posts:
   limit: 3 # leave blank to include all the blog posts
 ---
 
-I completed my PhD in Physics (2024) at the [University of Toronto](https://www.utoronto.ca/), studying information transfer in biological networks. I currently work as a Research Scientist at a research-focused startup, [AI Leap](https://www.aileap.org/).
+I completed my PhD in Physics (2024) at the [University of Toronto](https://www.utoronto.ca/), studying how biological networks can process information. I currently work as a Research Scientist at a research-focused startup, [AI Leap](https://www.aileap.org/).
 
 My work focuses on understanding why large networks develop internal representations that support generalization. This research can help us build more 'intelligent' models that are more in line with our goals, rather than the hard-to-interpret and expensive models of today.
 
-My personal view is towards information theoretic explanations around flat minima, and compression (eg, minimum description length, Kolmogorov complexity). Gradient descent is 'lazy' and finds flat minima, which happens to coincide with generalization to some degree. Understanding this in detail will enable us to build better models even with limited datasets, such as ARC-AGI.
+My personal view lies with information theoretic explanations and compression. Gradient descent is 'lazy' and finds flat minima, which are compressible and thus simple models (see: minimum description length). Simple models generalize better. Understanding this in detail will enable us to build better models even with limited datasets, such as ARC-AGI.
 
 If you have any questions for me, happy to have a chat.
 
