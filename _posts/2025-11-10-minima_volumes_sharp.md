@@ -51,6 +51,8 @@ _styles: >
 
 This blog post is for our [paper](https://arxiv.org/pdf/2511.04808){:target="_blank"}, "Sharp Minima Can Generalize: A Loss Landscape Perspective On Data". Here, we introduce background for our paper, and briefly summarize our key results. Experiments are explained in greater detail in our work, along with many other insights.
 
+A [video overview](https://youtu.be/32uYplNb2Bo){:target="_blank"} is available too.
+
 For those interested in running their own experiments, there is a [tutorial in google colab.](https://colab.research.google.com/drive/1JNbk8Sau-M31mLVOQv19GR2dlwW7xwLd){:target="_blank"}
 
 ## Introduction
