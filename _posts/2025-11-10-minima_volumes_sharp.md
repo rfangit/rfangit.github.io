@@ -118,7 +118,7 @@ How do we define volume of a minima? If we have a minima, we can change its para
     <strong>Figure 3:</strong> Starting from a minima (green dot), we choose random vectors to perturb the model weights along. The loss increases as the weights are perturbed, and we can define a basin by setting an arbitrary loss threshold. Using multiple random vectors allows us to measure the volume of this basin. This technique has some shortcomings (eg, it underestimates the true volumes). We discuss this in more detail in our paper, but it does not seem to affect our experimental results. 
 </div>
 
-Volume is thus a measure of minima flatness that is directly proportional to the probability of finding a minima via randomly chosen parameters, which is useful for some experiments <d-cite key="chiangLOSSLANDSCAPESARE2023"></d-cite> <d-cite key="pelegBiasStochasticGradient2025"></d-cite> .
+Volume is thus a measure of minima flatness that is directly proportional to the probability of finding a minima via randomly chosen parameters, which is useful for some experiments <d-cite key="chiangLOSSLANDSCAPESARE2023"></d-cite> <d-cite key="pelegBiasStochasticGradient2025"></d-cite>.
 
 Using this measure of volume, Huang et al. (as well as others <d-cite key="scherlisEstimatingProbabilitySampling2025"></d-cite>, including us!) have measured the volumes of minima obtained from training on poisoned datasets - datasets with additional samples that are incorrectly labelled. These poisoned minima achieve 100% accuracy on the base dataset but very low test accuracy. We find they also have significantly smaller volumes.
 
@@ -196,12 +196,12 @@ Aside from our main results here - showing counterexamples to the flat minima hy
 
 - Minima tend to shrink with more data. There is no obvious trend for how they shrink - flat minima can abruptly disappear as more data is added, while some sharp minima remain.
 - Poisoning the dataset reduces the size of the found minima much faster than adding properly labelled additional data. This suggests most sharp minima are bad.
-- Using sharpness-aware minimization results in slight increases in both volume and test accuracy <d-cite key="foretSharpnessAwareMinimizationEfficiently2021"></d-cite> .
-- Grokking, the phenomenon where test loss abruptly shrinks long after train loss appears to plateau, seems easily explainable from volumes <d-cite key="powerGrokkingGeneralizationOverfitting2022"></d-cite> . We find a surprising result where systems that grok initially find a large volume solution (with high test loss) and then slowly find a much sharper minima with very low test loss. This is another striking counterexample to the flat minima hypothesis.
+- Using sharpness-aware minimization results in slight increases in both volume and test accuracy <d-cite key="foretSharpnessAwareMinimizationEfficiently2021"></d-cite>.
+- Grokking, the phenomenon where test loss abruptly shrinks long after train loss appears to plateau, seems easily explainable from volumes <d-cite key="powerGrokkingGeneralizationOverfitting2022"></d-cite>. We find a surprising result where systems that grok initially find a large volume solution (with high test loss) and then slowly find a much sharper minima with very low test loss. This is another striking counterexample to the flat minima hypothesis.
 
 ## Future Outlook
 
-Our results add evidence to existing work suggesting minima flatness is not essential for generalization <d-cite key="wenSharpnessMinimizationAlgorithms"></d-cite> <d-cite key="andriushchenkoModernLookRelationship2023"></d-cite> . Unlike other approaches, we have a semi-mechanistic explanation that seems to extend our results to many other cases: the volume hypothesis explains which minima we find, and empirically we know we need large datasets to get good minima. Therefore these good minima must be 'sharp', otherwise our volume results suggests we would find them easily.
+Our results add evidence to existing work suggesting minima flatness is not essential for generalization <d-cite key="wenSharpnessMinimizationAlgorithms"></d-cite> <d-cite key="andriushchenkoModernLookRelationship2023"></d-cite>. Unlike other approaches, we have a semi-mechanistic explanation that seems to extend our results to many other cases: the volume hypothesis explains which minima we find, and empirically we know we need large datasets to get good minima. Therefore these good minima must be 'sharp', otherwise our volume results suggests we would find them easily.
 
 This raises a crucial question:
 
@@ -209,11 +209,11 @@ This raises a crucial question:
     <p class="mb-0">Should future work prioritize minima flatness in search of data-efficient algorithms for deep learning?</p>
 </blockquote>
 
-The experiments that re-motivated the flat minima hypothesis studied improved generalization with small-batch training <d-cite key="keskarLargeBatchTrainingDeep2017"></d-cite> . Recreating these experiments (with volumes instead of eigenvalue based flatness metrics, see our paper appendix) shows a trend where high volume minima have improved generalization. So to be precise, we see the relationship between flatness and generalization depends on how these minima were obtained.
+The experiments that re-motivated the flat minima hypothesis studied improved generalization with small-batch training <d-cite key="keskarLargeBatchTrainingDeep2017"></d-cite>. Recreating these experiments (with volumes instead of eigenvalue based flatness metrics, see our paper appendix) shows a trend where high volume minima have improved generalization. So to be precise, we see the relationship between flatness and generalization depends on how these minima were obtained.
 
-Probing deeper into theoretical explanations for the flat minima hypothesis, the most common is a complexity argument - a minima which is flat, can stored in less bits and is thus lower in complexity <d-cite key="hintonKeepingNeuralNetworks1993"></d-cite> . This link appears weak, but that may be why we observe these differing trends. Minima can correspond to low complexity solutions without generally being flat in parameter space.
+Probing deeper into theoretical explanations for the flat minima hypothesis, the most common is a complexity argument - a minima which is flat, can stored in less bits and is thus lower in complexity <d-cite key="hintonKeepingNeuralNetworks1993"></d-cite>. This link appears weak, but that may be why we observe these differing trends. Minima can correspond to low complexity solutions without generally being flat in parameter space.
 
-For examples, see the simple analytic solutions obtained from grokking <d-cite key="gromovGrokkingModularArithmetic2023"></d-cite> and measurements of their Kolmogorov complexity <d-cite key="DEMOSS2025134859"></d-cite> . 
+For examples, see the simple analytic solutions obtained from grokking <d-cite key="gromovGrokkingModularArithmetic2023"></d-cite> and measurements of their Kolmogorov complexity <d-cite key="DEMOSS2025134859"></d-cite>. 
 
 As a final point, we note while the trends may be unclear, there does not seem to be any flat minima which generalize as well as the sharp minima. Our results suggest the large data-driven models of today are in some sense 'sharp', and adding more data to improve them only results in even sharper minima.
 
