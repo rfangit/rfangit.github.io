@@ -23,7 +23,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/blog/";
           },
-        },{id: "post-introduction-to-mean-flow",
+        },{id: "post-the-volume-hypothesis-and-sharp-minima",
+        
+          title: "The Volume Hypothesis And Sharp Minima",
+        
+        description: "",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/minima_volumes_sharp/";
+          
+        },
+      },{id: "post-introduction-to-mean-flow",
         
           title: "Introduction to Mean Flow",
         
