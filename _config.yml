@@ -4,7 +4,7 @@
 
 title: blank # the website title (if blank, full name will be used instead)
 first_name: Raymond
-middle_name: 
+middle_name:
 last_name: Fan
 contact_note: >
   You can even add a little note about which of these is the best way to reach you.
@@ -125,12 +125,12 @@ related_blog_posts:
 # you can display them in your blog by adding a link to the RSS feed.
 external_sources:
 # Currently not in use!
-  #- name: medium.com
-  #  rss_url: https://medium.com/@al-folio/feed
-  #- name: Google Blog
-  #  posts:
-  #    - url: https://blog.google/technology/ai/google-gemini-update-flash-ai-assistant-io-2024/
-  #      published_date: 2024-05-14
+#- name: medium.com
+#  rss_url: https://medium.com/@al-folio/feed
+#- name: Google Blog
+#  posts:
+#    - url: https://blog.google/technology/ai/google-gemini-update-flash-ai-assistant-io-2024/
+#      published_date: 2024-05-14
 
 # -----------------------------------------------------------------------------
 # Newsletter

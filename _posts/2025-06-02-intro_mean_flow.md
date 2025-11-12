@@ -1,7 +1,7 @@
 ---
 layout: distill
 title: Introduction to Mean Flow
-description:  
+description:
 tags: code math artificial-intelligence
 date: 2025-06-02
 mermaid:
@@ -23,7 +23,6 @@ authors:
       name: University of Toronto
 
 bibliography: 2025-05-12-distill.bib
-
 
 toc:
   - name: Introduction
@@ -52,11 +51,11 @@ _styles: >
   }
 ---
 
-This tutorial is implemented as a [google colab notebook](https://colab.research.google.com/drive/18HeOrhQ_5u-TvHhfxHr8_t_03pX-tHO-){:target="_blank"}, where you can follow along with the code and run it yourself.
+This tutorial is implemented as a [google colab notebook](https://colab.research.google.com/drive/18HeOrhQ_5u-TvHhfxHr8_t_03pX-tHO-){:target="\_blank"}, where you can follow along with the code and run it yourself.
 
 ## Introduction
 
-["Mean Flows for One-step Generative Modeling"](https://arxiv.org/abs/2505.13447v1){:target="_blank"} is a new idea to modify flow matching for 1 step generation. In this tutorial post, we'll introduce the basics and an example implementation for standard 2d toy flow matching problems. Do consider reading the original paper for more details.
+["Mean Flows for One-step Generative Modeling"](https://arxiv.org/abs/2505.13447v1){:target="\_blank"} is a new idea to modify flow matching for 1 step generation. In this tutorial post, we'll introduce the basics and an example implementation for standard 2d toy flow matching problems. Do consider reading the original paper for more details.
 
 ## Flow Matching
 
@@ -85,7 +84,7 @@ Unfortunately this flow is fairly curved. As a result, transforming source to ta
 Instead of training a model to predict the flow at a point $v(\vec{x}(t), t)$, mean flow modifies the training algorithm and model to predict the average flow over the interval $r, t$ given by
 
 \begin{equation}
-u(\vec{x}(t), t, r) = \frac{1}{t - r} \int_{r}^{t} v(\vec{x}(s), s) ds
+u(\vec{x}(t), t, r) = \frac{1}{t - r} \int\_{r}^{t} v(\vec{x}(s), s) ds
 \end{equation}
 
 This corresponds to averaging the flow over the green line in the following diagram.
@@ -155,23 +154,24 @@ In mean flow:
 - Sampling occurs by evaluating the model at $t = t_{current}, r = t - dt $. For single step sampling, we evaluate at $r = 0, t = 1$.
 
 To accomplish this, we define
+
 - a model that accepts an additional time parameter $r$. For 2D examples, a couple fully connected layers suffice, and it's easy to add the extra time dimension.
 - a class for handling $t, r$ generation that computes the loss.
 - a training function that uses our pre-existing class.
 
 **Note:** Pay careful attention to loss computation! If you don't use detach() to stop the flow of gradients, it's very easy to get a model that never trains.
 
-````markdown
+```markdown
 # Mean Flow Model
+
 class MeanFlowNet(nn.Module):
-    def __init__(self, input_dim, h_dim=64):
-        super().__init__()
-        # Input dimension should be x (input_dim) + t (1) + r (1) = input_dim + 2
-        self.fc_in  = nn.Linear(input_dim + 2, h_dim)
-        self.fc2    = nn.Linear(h_dim, h_dim)
-        self.fc3    = nn.Linear(h_dim, h_dim)
-        self.fc4    = nn.Linear(h_dim, h_dim)
-        self.fc_out = nn.Linear(h_dim, input_dim)
+def **init**(self, input_dim, h_dim=64):
+super().**init**() # Input dimension should be x (input_dim) + t (1) + r (1) = input_dim + 2
+self.fc_in = nn.Linear(input_dim + 2, h_dim)
+self.fc2 = nn.Linear(h_dim, h_dim)
+self.fc3 = nn.Linear(h_dim, h_dim)
+self.fc4 = nn.Linear(h_dim, h_dim)
+self.fc_out = nn.Linear(h_dim, input_dim)
 
     def forward(self, x, t, r, act=F.gelu):
         t = t.expand(x.size(0), 1)  # Ensure t has the correct dimensions for x batches
@@ -185,9 +185,10 @@ class MeanFlowNet(nn.Module):
         return self.fc_out(x)
 
 # MeanFlow class that handles time generation, loss computation
+
 class MeanFlow:
-    def __init__(self,):
-        super().__init__()
+def **init**(self,):
+super().**init**()
 
     def sample_t_r(self, batch_size, device):
         # Generate random t values in the shape of the batch size
@@ -219,10 +220,11 @@ class MeanFlow:
         return loss
 
 # Training function that uses the class
+
 def train_mean_model(model, source_data_function, target_data_function, n_epochs=100, lr=0.003, batch_size=2048, batches_per_epoch=10, epoch_save_freq = 10, checkpoint_prefix='mean_flow_model'):
-    optimizer = optim.Adam(model.parameters(), lr=lr)#torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.0) #different optimizer
-    device = next(model.parameters()).device
-    #define an instance of meanflow to use to handle times and loss calculation
+optimizer = optim.Adam(model.parameters(), lr=lr)#torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.0) #different optimizer
+device = next(model.parameters()).device
+#define an instance of meanflow to use to handle times and loss calculation
 
     meanflow = MeanFlow()
 
@@ -265,7 +267,7 @@ def train_mean_model(model, source_data_function, target_data_function, n_epochs
     }, checkpoint_path)
     print(f"Saved model checkpoint to {checkpoint_path}")
     return model
-````
+```
 
 And that's it!
 
@@ -311,7 +313,7 @@ Our flow matching model generates accurate results using multiple denoising step
 
 ### Mean Flow Example
 
-Next, mean flow. 
+Next, mean flow.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">

@@ -1,7 +1,7 @@
 ---
 layout: distill
 title: The Volume Hypothesis And Sharp Minima
-description:  
+description:
 tags: code math artificial-intelligence
 date: 2025-11-10
 mermaid:
@@ -49,11 +49,11 @@ _styles: >
   }
 ---
 
-This blog post is for our [paper](https://arxiv.org/pdf/2511.04808){:target="_blank"}, "Sharp Minima Can Generalize: A Loss Landscape Perspective On Data". Here, we introduce background for our paper, and briefly summarize our key results. Experiments are explained in greater detail in our work, along with many other insights.
+This blog post is for our [paper](https://arxiv.org/pdf/2511.04808){:target="\_blank"}, "Sharp Minima Can Generalize: A Loss Landscape Perspective On Data". Here, we introduce background for our paper, and briefly summarize our key results. Experiments are explained in greater detail in our work, along with many other insights.
 
-A [video overview](https://youtu.be/32uYplNb2Bo){:target="_blank"} is available too.
+A [video overview](https://youtu.be/32uYplNb2Bo){:target="\_blank"} is available too.
 
-For those interested in running their own experiments, there is a [tutorial in google colab.](https://colab.research.google.com/drive/1JNbk8Sau-M31mLVOQv19GR2dlwW7xwLd){:target="_blank"}
+For those interested in running their own experiments, there is a [tutorial in google colab.](https://colab.research.google.com/drive/1JNbk8Sau-M31mLVOQv19GR2dlwW7xwLd){:target="\_blank"}
 
 ## Introduction
 
@@ -99,8 +99,8 @@ How would this explain generalization? There's a conjecture called the flat mini
 
 These two hypotheses can be tested experimentally: if we acquire a variety of minima, evaluate their volumes on a dataset and their test accuracies, we should find
 
-*   Minima found from gradient descent on the dataset occupy the largest volumes (volume hypothesis)
-*   Large volume minima have better test accuracy (flat minima hypothesis)
+- Minima found from gradient descent on the dataset occupy the largest volumes (volume hypothesis)
+- Large volume minima have better test accuracy (flat minima hypothesis)
 
 How do we define volume of a minima? If we have a minima, we can change it's parameters by a small amount which changes the loss as well. The volume of a minima is the region of connected parameter space which lies below some loss threshold. This volume is easy to estimate via a monte carlo technique, although it has some shortcomings (see our paper).
 
@@ -142,8 +142,8 @@ Therefore the volume hypothesis is a plausible explanation for why we don't obse
 
 The above results paint a very idealistic picture of deep learning:
 
-*   Volume hypothesis guarantees we find large volume minima
-*   Flat minima hypothesis implies the large volume minima generalize well
+- Volume hypothesis guarantees we find large volume minima
+- Flat minima hypothesis implies the large volume minima generalize well
 
 This picture ignores that large datasets are needed in deep learning. So one of these hypotheses must break down in small datasets.
 
@@ -153,8 +153,8 @@ Note that flatness measures (eg, volume) are measured **with respect to** a give
 
 We train minima on larger and larger subsets of a problem (eg, MNIST). This gives us a variety of minima, and a variety of datasets to evaluate their volumes on. We find that for small datasets:
 
-*   Minima found from gradient descent on the dataset are larger in volume than minima from training on larger datasets.
-*   Minima which generalize best have very small volumes.
+- Minima found from gradient descent on the dataset are larger in volume than minima from training on larger datasets.
+- Minima which generalize best have very small volumes.
 
 The volume hypothesis seems to accurately describe the minima found by deep learning even at small datasets - the minima we get occupy much larger volumes. Meanwhile the flat minima hypothesis doesn't seem to hold very well - minima we get from larger dataset sizes (which have better test accuracy) are sharp.
 
@@ -194,10 +194,10 @@ Adding more data shrinks the previously large minima, such that (previously smal
 
 Aside from our main results here - showing counter examples to the flat minima hypothesis, while the volume hypothesis appears robust - our paper also contains a number of other experiments and observations. Notably:
 
-*   Minima tend to shrink with more data. There is no obvious trend for how they shrink - flat minima can abruptly disappear as more data is added, while some sharp minima remain.
-*   Poisoning the dataset reduces the size of the found minima much faster than adding properly labelled additional data. This suggests most sharp minima are bad.
-*   Using sharpness-aware minimization results in slight increases in both volume and test accuracy. <d-cite key="foretSharpnessAwareMinimizationEfficiently2021"></d-cite>
-*   Grokking, the phenomenon where test loss abruptly shrinks long after train loss appears to plateau, sems to be easily explainable from volumes. <d-cite key="powerGrokkingGeneralizationOverfitting2022"></d-cite> We find a surprising result where systems that grok initially find a large volume solution (with high test loss), and then slowly find a much sharper minima with very low test loss. This is another striking counter example to the flat minima hypothesis.
+- Minima tend to shrink with more data. There is no obvious trend for how they shrink - flat minima can abruptly disappear as more data is added, while some sharp minima remain.
+- Poisoning the dataset reduces the size of the found minima much faster than adding properly labelled additional data. This suggests most sharp minima are bad.
+- Using sharpness-aware minimization results in slight increases in both volume and test accuracy. <d-cite key="foretSharpnessAwareMinimizationEfficiently2021"></d-cite>
+- Grokking, the phenomenon where test loss abruptly shrinks long after train loss appears to plateau, sems to be easily explainable from volumes. <d-cite key="powerGrokkingGeneralizationOverfitting2022"></d-cite> We find a surprising result where systems that grok initially find a large volume solution (with high test loss), and then slowly find a much sharper minima with very low test loss. This is another striking counter example to the flat minima hypothesis.
 
 ## Future Outlook
 
@@ -218,4 +218,3 @@ For examples, see the simple analytic solutions obtained from grokking <d-cite k
 As a final point, we note while the trends may be unclear, there does not seem to be any flat minima which generalize as well as the sharp minima. Our results suggest the large data driven models of today are in some sense 'sharp', and adding more data to improve them only results in even sharper minima.
 
 Given that we have no evidence of the existence hypothetical very flat and very good minima, it may be time to consider approaches aside from flatness.
-

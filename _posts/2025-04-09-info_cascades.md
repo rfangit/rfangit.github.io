@@ -59,22 +59,22 @@ _styles: >
 
 ## Introduction
 
-Information theory was originally developed in the context of optimizing electronic communications. This has resulted in much confusion when applied to the biological sciences. 
+Information theory was originally developed in the context of optimizing electronic communications. This has resulted in much confusion when applied to the biological sciences.
 
-This blog post is intended to clarify what information theory tells us about information transfer through a chemical cascade. It is intended as a supplement to [my paper on the topic](https://arxiv.org/pdf/2309.10162){:target="_blank"}, intended for an audience new to both information theory and stochastic modelling. 
+This blog post is intended to clarify what information theory tells us about information transfer through a chemical cascade. It is intended as a supplement to [my paper on the topic](https://arxiv.org/pdf/2309.10162){:target="\_blank"}, intended for an audience new to both information theory and stochastic modelling.
 
 Specifically, we analyze a cascade of three species of molecules, $X \xrightarrow{} Y \xrightarrow{} Z$, where $X \xrightarrow{} Y$ denotes that the production rate of molecule $Y$ is proportional to the amount of $X$ molecules, and similarly for $Y \xrightarrow{} Z$. This represents a simple biochemical cascade.
 
 Mathematically, the cascade is defined by the following chemical reactions
 
 \begin{aligned}
-    y &\xrightarrow[\phantom{y/\tau_y}]{\alpha x} y+1 & \\
-    y &\xrightarrow[\phantom{y/\tau_y}]{y/\tau_y} y-1 & \\
-    z &\xrightarrow[\phantom{z/\tau_z}]{\beta y} z+1 & \\
-    z &\xrightarrow[\phantom{z/\tau_z}]{z/\tau_z} z-1 & 
+y &\xrightarrow[\phantom{y/\tau_y}]{\alpha x} y+1 & \\
+y &\xrightarrow[\phantom{y/\tau_y}]{y/\tau_y} y-1 & \\
+z &\xrightarrow[\phantom{z/\tau_z}]{\beta y} z+1 & \\
+z &\xrightarrow[\phantom{z/\tau_z}]{z/\tau_z} z-1 &
 \end{aligned}
 
-where the dynamics governing $x(t)$ have been left unspecified. Such cascades have been used before to model [relationships between DNA, mRNA and protein](https://www.theorie.physik.lmu.de/lsfrey/teaching/archiv/wise_08_09/statphysbio/Paulsson_Physics_of_Life_Reviews_2005.pdf){:target="_blank"}.
+where the dynamics governing $x(t)$ have been left unspecified. Such cascades have been used before to model [relationships between DNA, mRNA and protein](https://www.theorie.physik.lmu.de/lsfrey/teaching/archiv/wise_08_09/statphysbio/Paulsson_Physics_of_Life_Reviews_2005.pdf){:target="\_blank"}.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -192,11 +192,11 @@ which uses $Y_{birth}(t)$ and an initial number of $y$ molecules, and generates 
     Example input and output time traces for the channel given by the molecular degradation reaction.
 </div>
 
-The other two physical processes are 
+The other two physical processes are
 
 \begin{aligned}
-    z &\xrightarrow[\phantom{z/\tau_z}]{\beta y} z+1 & \\
-    z &\xrightarrow[\phantom{z/\tau_z}]{z/\tau_z} z-1 & 
+z &\xrightarrow[\phantom{z/\tau_z}]{\beta y} z+1 & \\
+z &\xrightarrow[\phantom{z/\tau_z}]{z/\tau_z} z-1 &
 \end{aligned}
 
 which generate $Z_{birth}(t)$ from $Y(t)$, and then $Z(t)$ using $Z_{birth}(t)$ births and an initial $Z(t = 0)$ value of molecules.
@@ -211,7 +211,7 @@ The first process
 y \xrightarrow{\alpha x} y+1
 \end{aligned}
 
-corresponds to a well studied channel in the optical communications literature, known as the direct detection photon channel. Several results for the channel capacity are known under different constraints for $\alpha x$, which we briefly include here. 
+corresponds to a well studied channel in the optical communications literature, known as the direct detection photon channel. Several results for the channel capacity are known under different constraints for $\alpha x$, which we briefly include here.
 
 {% details Channel Capacity Under Different Input Constraints %}
 
@@ -221,7 +221,7 @@ $$
 C = A_{max} / e
 $$
 
-If the mean $\alpha \langle x \rangle$ is also constrained, then the capacity becomes 
+If the mean $\alpha \langle x \rangle$ is also constrained, then the capacity becomes
 
 $$
 C = \alpha \langle x \rangle \log \left( \frac{A_{max}}{\alpha \langle x \rangle} \right)
@@ -236,9 +236,10 @@ Another constraint has been derived when the first two moments of the input sign
 $$
 C = \alpha \langle x \rangle \log \left(1 + \frac{\sigma^2_f}{\langle x \rangle^2}\right) \leq \frac{\sigma^2_f}{\langle x \rangle}
 $$
+
 {% enddetails %}
 
-For the second process 
+For the second process
 
 \begin{aligned}
 y \xrightarrow{y/\tau_y} y-1
@@ -258,7 +259,7 @@ $$
 
 In practice, it is difficult to measure time traces of multiple molecules inside of living cells simultaneously. Furthermore, the mutual information discussed above applies to distributions of time traces, which is hard to estimate from experimental data (any specific time trace has near zero probability).
 
-However, it is possible to measure the abundances of multiple molecules in recently deceased cells. This can be done on large numbers of cells to obtain joint probability distributions of <b>instantaneous</b> molecular abundances, illustrated in the following figure. This data can be analyzed to infer properties of the underlying relationships. 
+However, it is possible to measure the abundances of multiple molecules in recently deceased cells. This can be done on large numbers of cells to obtain joint probability distributions of <b>instantaneous</b> molecular abundances, illustrated in the following figure. This data can be analyzed to infer properties of the underlying relationships.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -317,7 +318,7 @@ For a simple intuitive explanation of how this can occur, consider the problem o
 
 Suppose $Y$ molecules have a very short lifetime compared to $X, Z$ molecules. Then the abundance $Y$ will oscillate very quickly. $Z$ molecules, which are made proportional to the amount of $Y$ molecules, will experience rapid fluctuations in their birth rate. But the $Z$ abundance is related to the number of $Z$ molecules made over the average lifetime of a $Z$ molecule, and thus does not vary much if the $Z$ lifetime is large compared to the $Y$ molecule lifetime.
 
-In this way, we can accurately estimate the current value of $X$ by looking at the $Z$ abundance, since $Z$ time-averages out the large amount of $Y$ noise. This idea of estimation is closely linked with the mutual information (which represents the reduction in uncertainty about the value of $X$). 
+In this way, we can accurately estimate the current value of $X$ by looking at the $Z$ abundance, since $Z$ time-averages out the large amount of $Y$ noise. This idea of estimation is closely linked with the mutual information (which represents the reduction in uncertainty about the value of $X$).
 
 ## On Actual Inequalities
 
@@ -334,8 +335,9 @@ This observation prompts a deeper question:
 Surprisingly, <b>yes</b>&mdash;but with caveats.
 
 While we saw that $Y$ can accumulate arbitrary information from $X$ over time, accurate information about the current state of $X$ is different, as older information becomes irrelevant. There is a competition between:
-   - The <b>rate</b> at which $Y$ learns about $X$ (governed by the production reaction)
-   - The <b>rate</b> at which $X$'s state changes (governed by X's dynamics)
+
+- The <b>rate</b> at which $Y$ learns about $X$ (governed by the production reaction)
+- The <b>rate</b> at which $X$'s state changes (governed by X's dynamics)
 
 Unlike the DPI, these new inequalities are dependent on the dynamics of the system involved and do not generalize. Furthermore, they're mathematically difficult to derive and work with.
 

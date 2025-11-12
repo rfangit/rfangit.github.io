@@ -1,7 +1,7 @@
 ---
 layout: distill
 title: Optimal Flow-Matching
-description:  
+description:
 tags: code math artificial-intelligence
 date: 2025-05-11
 mermaid:
@@ -52,7 +52,7 @@ _styles: >
   }
 ---
 
-The implementation of the solution for various datasets are available on [github.](https://github.com/rfangit/analytical_flow_matching/){:target="_blank"}
+The implementation of the solution for various datasets are available on [github.](https://github.com/rfangit/analytical_flow_matching/){:target="\_blank"}
 
 ## Introduction
 
@@ -62,7 +62,7 @@ The training objectives of diffusion models can be solved analytically for an ar
 
 - The algorithm only generates images present in the training set. It memorizes and cannot produce new images.
 
-However, this algorithm may be useful for understanding how deep learning models trained with the diffusion objective are producing new images. 
+However, this algorithm may be useful for understanding how deep learning models trained with the diffusion objective are producing new images.
 
 Flow-matching is a new formulation of generative modeling using the language of ODE flows. <d-cite key= "lipman2023flowmatchinggenerativemodeling"></d-cite> It is equivalent to diffusion, but conceptually and mathematically simpler. Here, we derive the solution that minimizes the flow-matching objective's loss for an arbitrary dataset.
 
@@ -82,7 +82,7 @@ Flow-matching is a new formulation of generative modeling using the language of 
 
 ## Flow-Matching
 
-In flow-matching, we randomly sample points $\vec{x_{i}}, \vec{x_{f}}$ from the input and output distributions, and calculate a sample velocity 
+In flow-matching, we randomly sample points $\vec{x_{i}}, \vec{x_{f}}$ from the input and output distributions, and calculate a sample velocity
 
 $$
 \vec{v}_{s} = \vec{x_i} \alpha' (t) + \vec{x_f} \beta' (t)
@@ -90,7 +90,7 @@ $$
 
 where $t$ is a randomly chosen time $t \varepsilon [0, 1]$, and $\alpha (t), \beta (t)$ are scheduling functions with $\alpha (0) = \beta (1) = 1, \alpha (1) = \beta (0) = 0$. Common choices are $\alpha(t) = 1 - t, \beta(t) = t$.
 
-We train a model $\vec{v}_{m}(\vec{x}, t)$ to predict the sample velocity given the position 
+We train a model $\vec{v}_{m}(\vec{x}, t)$ to predict the sample velocity given the position
 
 $$
 \vec{x} = \vec{x}_i \alpha(t) + \vec{x}_f \beta(t)
@@ -116,7 +116,7 @@ $$
 \langle x_{i} \rangle_{\vec{x}, t} = \frac{\int_{\vec{x_i}, \vec{x_f}} \vec{x}_{i} \, P( \vec{x_i}, \vec{x_f} \mid \vec{x} = \vec{x_i} \alpha (t) + \vec{x_f} \beta (t)) \, dx_i dx_f}{\int_{\vec{x_i}, \vec{x_f}} \, P( \vec{x_i}, \vec{x_f} \mid \vec{x} = \vec{x_i} \alpha (t) + \vec{x_f} \beta (t)) \, dx_i dx_f}
 $$
 
-where we condition the distribution of inputs and outputs on points contributing to the velocity $\langle \vec{v_{s}} \rangle_{\vec{x}, t}$. The denominator ensures the conditional probability distribution is appropriately normalized (since only connected pairs $\vec{x}_i, \vec{x}_f$ contribute to a given $\vec{x}, t$). 
+where we condition the distribution of inputs and outputs on points contributing to the velocity $\langle \vec{v_{s}} \rangle_{\vec{x}, t}$. The denominator ensures the conditional probability distribution is appropriately normalized (since only connected pairs $\vec{x}_i, \vec{x}_f$ contribute to a given $\vec{x}, t$).
 
 These integrals can be simplified if we impose constraints on the distributions (eg, our inputs are Gaussian noise).
 
@@ -125,7 +125,7 @@ These integrals can be simplified if we impose constraints on the distributions 
 If the input distribution is a Gaussian, and the output distribution is defined by discrete training data points $\vec{\mu}_j$, the velocity that minimizes our training objective is given by
 
 $$
-\vec{v} (\vec{x}, t) = \frac{1}{1 - t}\left( \sum_j \vec{\mu}_{j} \cdot 
+\vec{v} (\vec{x}, t) = \frac{1}{1 - t}\left( \sum_j \vec{\mu}_{j} \cdot
 \text{Softmax}_{\vec{\mu}_j}\left(-\frac{1}{2} \frac{\left(\vec{x} - \vec{\mu}_{j} t \right)^2}{(1 - t)^2 \sigma_i} \right) - \vec{x} \right)
 $$
 
@@ -135,7 +135,7 @@ $$
 \text{Softmax}_{\vec{x}}\left(f(\vec{x}) \right) = \frac{e^{f(\vec{x})}}{\sum_{\vec{x}} e^{f(\vec{x})}}
 $$
 
-For the derivation, see this [appendix.](https://github.com/rfangit/analytical_flow_matching/blob/main/Optimal_Flow_Matching___Appendix.pdf){:target="_blank"}
+For the derivation, see this [appendix.](https://github.com/rfangit/analytical_flow_matching/blob/main/Optimal_Flow_Matching___Appendix.pdf){:target="\_blank"}
 
 This algorithm is easy to interpret. At any time, the ideal flow checks the $L_2$ distance between the current point and all training data points, multiplied by a time dependent factor. The softmax turns this into a distribution, and it moves directly to the expected endpoint $\langle \mu \rangle$ of this distribution. The $1/(1 - t)$ term means that single-step integration from this point takes it directly to this expected end point.
 
@@ -149,7 +149,7 @@ Despite this, such an algorithm may be helpful in interpreting how denoising gen
 
 ## Examples With Code
 
-This algorithm has been implemented in this [github repo with example uses.](https://github.com/rfangit/analytical_flow_matching/){:target="_blank"} Here we display optimal flows using as training data the first 50,000 images of MNIST, CIFAR-10, and 5000 images from ImageNet.
+This algorithm has been implemented in this [github repo with example uses.](https://github.com/rfangit/analytical_flow_matching/){:target="\_blank"} Here we display optimal flows using as training data the first 50,000 images of MNIST, CIFAR-10, and 5000 images from ImageNet.
 
 <div class="row">
     <div class="col-md-4">
@@ -206,7 +206,7 @@ Since the ideal flow minimizes the MSE loss, one can compute the minimal trainin
     Optimal MSE loss at various parameters of $t$ for training MNIST and CIFAR-10. The loss at high values of $t$ is small since contributions to the velocity come mostly from a single sample, which the optimal denoiser has memorized. Losses were calculated using $400$ randomly generated points at each value of $t$. 
 </div>
 
-This occurs because there is greatest variance in the velocity at the start, where all output images seem possible. As time progresses, very few images are likely and the softmax becomes dominated by a specific training example. 
+This occurs because there is greatest variance in the velocity at the start, where all output images seem possible. As time progresses, very few images are likely and the softmax becomes dominated by a specific training example.
 
 This can be seen explicitly when plotting our algorithms prediction for the final image at a given time, where they initially predict a blurry image corresponding to the average but very quickly decide on the final image. More training data should ensure the variance stays large for larger $t$ values.
 
@@ -249,7 +249,7 @@ There exists a large body of work trying to understand how these models behave o
 Here we focus on small insights from the optimal solution. For neural networks, the problem is estimating
 
 $$
-\sum_j \vec{\mu}_{j} \cdot 
+\sum_j \vec{\mu}_{j} \cdot
 \text{Softmax}_{\vec{\mu}_j}\left(-\frac{1}{2} \frac{\left(\vec{x} - \vec{\mu}_{j} t \right)^2}{(1 - t)^2 \sigma_i} \right)
 $$
 
@@ -266,7 +266,7 @@ What these cues are and how the model learns them do not seem explainable from t
 For an arbitrary schedule where some data points are more likely than others, we have
 
 $$
-\vec{v} (\vec{x}, t) = \frac{\alpha'}{\alpha} \vec{x} + \frac{\alpha \beta' + \alpha' \beta}{\alpha} \sum_j \vec{\mu}_{j} \cdot 
+\vec{v} (\vec{x}, t) = \frac{\alpha'}{\alpha} \vec{x} + \frac{\alpha \beta' + \alpha' \beta}{\alpha} \sum_j \vec{\mu}_{j} \cdot
 \text{Softmax}_{\vec{\mu}_j}\left(-\frac{1}{2} \frac{\left(\vec{x} - \vec{\mu}_{j} \beta \right)^2}{\alpha^2 \sigma_i} + \log C_j \right)
 $$
 
@@ -278,7 +278,7 @@ $$
 \begin{aligned}
 \vec{v}(\vec{x}, t) &= \left(\frac{1}{\alpha^2 \sigma_i + \beta^2 \sigma_f} \right) \cdot \bigg[ \vec{x} \left(\alpha' \alpha \sigma_i + \beta' \beta \sigma_f \right) \\
 &\quad - \alpha \sigma_i\left(\alpha' \beta  - \alpha \beta' \right)
-\left( \sum_j \vec{\mu}_{j} \cdot 
+\left( \sum_j \vec{\mu}_{j} \cdot
 \text{Softmax}_{\vec{\mu}_j}\left(-\frac{1}{2} \frac{\left(\vec{x} - \vec{\mu}_{j} \beta \right)^2}{\alpha^2 \sigma_i + \beta^2 \sigma_f} + \log C_j \right) \right) \bigg] \\
 \end{aligned}
 $$
@@ -299,7 +299,7 @@ which represents a case where Gaussian noise is added to our training data.
     Optimal flow-matching from a 2D Gaussian to a series of points on a line with a nonlinear schedule $\alpha = 1 - t^{2}, \beta = t^{2}$ and allowing for variance in the output $\sigma_f > 0$.
 </div>
 
-The case of non-isotropic Gaussians can be found in the [appendix, section 3.1.](https://github.com/rfangit/analytical_flow_matching/blob/main/Optimal_Flow_Matching___Appendix.pdf){:target="_blank"}
+The case of non-isotropic Gaussians can be found in the [appendix, section 3.1.](https://github.com/rfangit/analytical_flow_matching/blob/main/Optimal_Flow_Matching___Appendix.pdf){:target="\_blank"}
 
 Recent work has noted that far away from the data manifold the trajectories move in straight curl-free paths. <d-cite key="balcerak2025energymatchingunifyingflow"></d-cite> I was curious if the optimal vector fields generated by flow-matching might always be conservative (and thus curl free) even close to the data manifold. If this was true, then the problem could be modeled via a time-dependent energy, which might simplify training.
 
@@ -313,7 +313,7 @@ Flow-matching caught my attention since the formalism is very simple - it can be
 
 That said, I have ideas I'd like to try for making a more useful algorithm:
 
-- The analytical solution depends on softmax probabilities, which rapidly shrink to 0 for far-away points. Instead of a full pass through the data per computation, it seems feasible to go through the data, index it with an algorithm like [locality sensitive hashing](https://tylerneylon.com/a/lsh1/){:target="_blank"}, and then approximately compute it by only using close points.
+- The analytical solution depends on softmax probabilities, which rapidly shrink to 0 for far-away points. Instead of a full pass through the data per computation, it seems feasible to go through the data, index it with an algorithm like [locality sensitive hashing](https://tylerneylon.com/a/lsh1/){:target="\_blank"}, and then approximately compute it by only using close points.
 - Recent work with locality suggests images can be generated by matching to patches of different scales <d-cite key="kamb2024analytictheorycreativityconvolutional"></d-cite> - patches were used in image generation <d-cite key="efros2023image"></d-cite> before deep learning arose (GANs), but the varying scales from diffusion seems like a new twist.
 
 More on these approaches hopefully in future posts or papers.
@@ -322,7 +322,7 @@ On a side note, the optimal loss is very small at high $t$ values because the op
 
 ## Acknowledgements
 
-My interest in this topic was heavily influenced by this blog post, [Flow With What You Know](https://drscotthawley.github.io/blog/posts/FlowModels.html){:target="_blank"}, by Scott Hawley. Many kind thanks to Scott Hawley and Sander Dieleman for their generosity in answering questions and sharing background knowledge on this topic.
+My interest in this topic was heavily influenced by this blog post, [Flow With What You Know](https://drscotthawley.github.io/blog/posts/FlowModels.html){:target="\_blank"}, by Scott Hawley. Many kind thanks to Scott Hawley and Sander Dieleman for their generosity in answering questions and sharing background knowledge on this topic.
 
 If you find this post useful in your research or teaching, please consider citing it:
 

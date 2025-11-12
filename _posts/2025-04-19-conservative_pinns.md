@@ -1,7 +1,7 @@
 ---
 layout: distill
 title: Do Conservative PINNs Train Faster In High Dimensions?
-description: Alternatively, how strong is a conservative vector field as an inductive bias? 
+description: Alternatively, how strong is a conservative vector field as an inductive bias?
 tags: code math artificial-intelligence
 date: 2025-04-23
 mermaid:
@@ -50,17 +50,17 @@ _styles: >
   }
 ---
 
-The code and experimental results for this post are available on [github.](https://github.com/rfangit/conservative_pinn_speed_test/){:target="_blank"}
+The code and experimental results for this post are available on [github.](https://github.com/rfangit/conservative_pinn_speed_test/){:target="\_blank"}
 
 ## Introduction
 
-[**Hamiltonian Neural Networks**](https://arxiv.org/pdf/1906.01563v1){:target="_blank"} are a type of physics informed neural network (PINN). Their predictions result in more physically accurate simulations since they conserve energy, making them attractive for physics purposes.
+[**Hamiltonian Neural Networks**](https://arxiv.org/pdf/1906.01563v1){:target="\_blank"} are a type of physics informed neural network (PINN). Their predictions result in more physically accurate simulations since they conserve energy, making them attractive for physics purposes.
 
 They work by using coordinates $(x_1, x_2, ..., x_n)$ to predict a scalar $U(x_1, ..., x_n)$, and then automatic differentiation computes the gradients $\left(\frac{dU}{dx_1}, ..., \frac{dU}{dx_n}\right)$ which are compared to training data. This differential structure guarantees its predictions will conserve energy, whereas a network that predict gradients directly generally does not conserve energy.
 
 In the original paper, the authors mentioned there were negligible differences in the test/train losses for a baseline NN and the Hamiltonian NN. It is only when the networks are used for a long time that the differences in energy conservation become apparent.
 
-But is that really true? 
+But is that really true?
 
 ## Training Speed
 
@@ -82,7 +82,7 @@ In the original paper, experiments were done for mostly low-dimensional problems
 
 Hamiltonian NNs work by learning a single scalar function $U$ instead of $d$ separate gradient components. In theory, this suggests we should observe more significant speedups when the dimension of the problem is increased, which could explain the results in the previous paper.
 
-In practice, automatic differentiation could be too numerically unstable, or the scaling is too minor: it's well known neural networks scale really well with high dimensions (growing polynomially instead of exponentially) so the effect of this differential structure may be too minor. 
+In practice, automatic differentiation could be too numerically unstable, or the scaling is too minor: it's well known neural networks scale really well with high dimensions (growing polynomially instead of exponentially) so the effect of this differential structure may be too minor.
 
 In this blog post, we'll test whether higher dimensions reveal clearer advantages in training speed through a toy conservative vector field problem.
 
@@ -117,6 +117,7 @@ Here $\vec{c}_N$ are randomly located Gaussian centers with amplitudes and width
 </div>
 
 We compare two approaches:
+
 - **Baseline Network:**  
    Directly predicts all $d$ output components $(y_1, ..., y_d)$.
 
@@ -147,7 +148,7 @@ $$
 N \propto \frac{V_{\text{cube}}}{\langle V_{\text{Gaussian}} \rangle} = \frac{2^d}{\langle \sigma^d \rangle} \cdot \frac{\Gamma\left(\frac{d}{2} + 1\right)}{\pi^{d/2}}
 $$
 
-which approximately ensures each Gaussian *can* have 1 $\sigma$ of space around itself without overlaps. Note that due to random center generation, they will not end up evenly spread.
+which approximately ensures each Gaussian _can_ have 1 $\sigma$ of space around itself without overlaps. Note that due to random center generation, they will not end up evenly spread.
 
 **Fixed N = 15**: As the dimension increases, the number of Gaussian points stays fixed at $N = 15$. This number was chosen arbitrarily.
 
@@ -159,17 +160,17 @@ These three regimes span a wide variety of cases, from a problem whose complexit
 
 The conservative constraint should become more useful in high dimensions, since the baseline network must learn d independent functions, but the conservative network learns just one scalar potential.
 
-Therefore the conservative network should have lower train and test losses per epoch than the baseline network as the dimension of the problem is increased, regardless of the experimental regime. 
+Therefore the conservative network should have lower train and test losses per epoch than the baseline network as the dimension of the problem is increased, regardless of the experimental regime.
 
 ## Results
 
 We tested networks across a variety of dimensions for the three experiments. For each dimension, three architectures were used:
 
-| Network Configuration | Hidden Layers       |
-|-----------------------|---------------------|
-| Small                 | [64, 64, 64]        |
-| Medium                | [128, 128, 128]     |
-| Large                 | [256, 256, 256]     |
+| Network Configuration | Hidden Layers   |
+| --------------------- | --------------- |
+| Small                 | [64, 64, 64]    |
+| Medium                | [128, 128, 128] |
+| Large                 | [256, 256, 256] |
 
 Each architecture was trained with **10 different weight initializations** each on **10 different randomly generated datasets** to ensure reported results are not artifacts of peculiar initializations. All data (Gaussian parameters as well as training and test points) were generated with fixed random seeds for reproducibility.
 
@@ -191,7 +192,7 @@ The train and test losses behaved almost identically for all architectures and d
     <strong>Figure:</strong> Train and test losses for a network with hidden layers of $[256, 256, 256]$ neurons on our toy problem with densely packed Gaussians in $d = 2, 5, 8, 12$. Differences in losses gradually appear as the dimension increases. Shaded regions represent $\pm 1$ standard deviation among the 10 different weight initializations.
 </div>
 
-In the dense case, little differences were observed between losses at $d < 8$. At $d \geq 8$, there were notable decreases in the train/test loss for conservative networks. These trends occured in all network architectures, with the most significant effects for smaller networks. 
+In the dense case, little differences were observed between losses at $d < 8$. At $d \geq 8$, there were notable decreases in the train/test loss for conservative networks. These trends occured in all network architectures, with the most significant effects for smaller networks.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -208,6 +209,7 @@ In the dense case, little differences were observed between losses at $d < 8$. A
 </div>
 
 ### N = 15 Gaussians
+
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid 
@@ -222,11 +224,12 @@ In the dense case, little differences were observed between losses at $d < 8$. A
     <strong>Figure:</strong> Train and test losses for a network with hidden layers of $[64, 64, 64]$ and $[256, 256, 256]$ neurons on our toy problem with $N = 15$ Gaussians in $d = 5, 12, 20$. Slight differences in losses in higher dimensions, with benefits from conservative networks notably larger in smaller networks. Shaded regions represent $\pm 1$ standard deviation among the 10 different weight initializations.
 </div>
 
-For fixed center number $N = 15$, there was little difference between between losses at small dimension, and notably smaller loss at higher dimensions. For fixed center number it is easy to increase the dimension of the problem, so we test up to $d = 20$. Smaller networks enjoy greater advantages from the conservative bias. 
+For fixed center number $N = 15$, there was little difference between between losses at small dimension, and notably smaller loss at higher dimensions. For fixed center number it is easy to increase the dimension of the problem, so we test up to $d = 20$. Smaller networks enjoy greater advantages from the conservative bias.
 
 Note the advantages of a conservative network are much smaller for the fixed center number than in the dense case.
 
 ### N = 2 Gaussians
+
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.liquid 
@@ -244,6 +247,7 @@ Note the advantages of a conservative network are much smaller for the fixed cen
 For $N= 2$ Gaussians, the loss again only notably decreases at high dimensions, with effects more severe in smaller networks.
 
 ### Control Experiment: Non-Conservative Field
+
 To verify results arise from our conservative inductive bias, we test our networks on a non-conservative field. This field was achieved by multiplying our conservative vector field outputs by a fixed matrix of constant coefficients.
 
 <div class="row mt-3">
@@ -270,8 +274,8 @@ Hamiltonian networks contain inductive biases inspired from physics, and their a
 
 This work instead examined whether networks with a built-in conservation law (such as Hamiltonian NNs) improved training speed. The results showed these networks have **smaller training and test loss for a given epoch when the dimension of the problem is very high.** This is consistent with results from the original, where the only system to show improvements in training and test loss was the two body problem, which has 8 system coordinates (4 spatial coordinates and 4 velocity coordinates). However, the reduction in loss was fairly minor, with baseline networks almost always achieving lower loss when given x3 the number of epochs.
 
-This aligns with the theoretical expectation that learning a scalar potential should be simpler than a $d$ diemsnional vector field. Unfortunately, there is no evidence of a general scaling law for the training speedup of a conservative network, as the speedup effects are dependent on the architecture and do not appear to generalize. See [example](https://github.com/rfangit/conservative_pinn_speed_test/blob/main/figs/Dense%20Experiments/figs/12D_loss_ratio_64_64_64.png){:target="_blank"} [figures](https://github.com/rfangit/conservative_pinn_speed_test/blob/main/figs/Dense%20Experiments/figs/12D_loss_ratio_256_256_256.png){:target="_blank"}
- on the ratio of test losses in the github repo.
+This aligns with the theoretical expectation that learning a scalar potential should be simpler than a $d$ diemsnional vector field. Unfortunately, there is no evidence of a general scaling law for the training speedup of a conservative network, as the speedup effects are dependent on the architecture and do not appear to generalize. See [example](https://github.com/rfangit/conservative_pinn_speed_test/blob/main/figs/Dense%20Experiments/figs/12D_loss_ratio_64_64_64.png){:target="\_blank"} [figures](https://github.com/rfangit/conservative_pinn_speed_test/blob/main/figs/Dense%20Experiments/figs/12D_loss_ratio_256_256_256.png){:target="\_blank"}
+on the ratio of test losses in the github repo.
 
 In this comparison I've neglected the additional compute time cost of the conservative network. The conservative network generates a scalar, and automatic differentiation is needed for gradients. Automatic differentiation is also used in computing the loss, and constitutes a significant amount of time in training networks.
 
