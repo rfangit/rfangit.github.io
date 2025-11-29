@@ -10,7 +10,7 @@ profile:
   image_circular: false # crops the image to make it circular
   more_info:
 selected_papers: true # includes a list of papers marked as "selected={true}"
-social: false # includes social icons at the bottom of the page
+social: true # includes social icons at the bottom of the page
 
 announcements:
   enabled: False # includes a list of news items
@@ -25,9 +25,7 @@ latest_posts:
 
 I completed my PhD in Physics (2024) at the [University of Toronto](https://www.utoronto.ca/), studying how biological networks can process information. I currently work as a Research Scientist at a research-focused startup, [AI Leap](https://www.aileap.org/).
 
-My work focuses on understanding why large networks develop internal representations that support generalization. This research can help us build more 'intelligent' models that are more in line with our goals, rather than the hard-to-interpret and expensive models of today.
-
-My personal view lies with information theoretic explanations and compression. Gradient descent is 'lazy' and finds flat minima, which are compressible and thus simple models (see: minimum description length). Simple models generalize better. Understanding this in detail will enable us to build better models even with limited datasets, such as ARC-AGI.
+My interests lie in understanding why large networks develop internal representations that support generalization. This research can help us build more 'intelligent' models that are more in line with our goals, rather than the hard-to-interpret and expensive models of today.
 
 If you have any questions for me, happy to have a chat.
 
