@@ -23,7 +23,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/blog/";
           },
-        },{id: "post-the-volume-hypothesis-and-sharp-minima",
+        },{id: "post-notes-on-neural-tangent-kernels",
+        
+          title: "Notes on Neural Tangent Kernels",
+        
+        description: "Empirical notes on when NTKs work, when assumptions break, and a few explicit kernels on toy models.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/ntk_notes/";
+          
+        },
+      },{id: "post-the-volume-hypothesis-and-sharp-minima",
         
           title: "The Volume Hypothesis And Sharp Minima",
         
