@@ -23,10 +23,14 @@ latest_posts:
   limit: 3 # leave blank to include all the blog posts
 ---
 
-I completed my PhD in Physics (2024) at the [University of Toronto](https://www.utoronto.ca/), studying how biological networks can process information. I currently work as a Research Scientist at a research-focused startup, [AI Leap](https://www.aileap.org/).
+I'm a postdoc affiliated with the [Redwood Center](https://redwood.berkeley.edu/) at UC Berkeley, working with [Jamie Simon](https://jamiesimon.io/) on fundamental theory for deep learning. I completed my PhD in Physics (2024) at the [University of Toronto](https://www.utoronto.ca/), studying how biological networks can process information. I also worked briefly as a Research Scientist at a startup, where I acquired a strong interest in understanding deep learning.
 
-My interests lie in understanding why large networks develop internal representations that support generalization. This research can help us build more 'intelligent' models that are more in line with our goals, rather than the hard-to-interpret and expensive models of today.
+I believe we live in a very exciting time for deep learning theory, where we see overparameterized models exhibit many interesting phenomena (e.g., grokking, double descent) that appear to defy classical statistical learning theory.
 
-If you have any questions for me, happy to have a chat.
+This mirrors the state of quantum mechanics in the early 20th century, where new experiments revealed phenomena unexplainable by classical mechanics, such as the photoelectric effect and the ultraviolet catastrophe. The development of the theory of quantum mechanics not only allowed us to understand these phenomena, but also led to semiconductors, nuclear energy, medical imaging.
+
+I believe we will be able to develop similar understanding for deep learning, and unlock similar benefits.
+
+I sometimes share writing on technical topics that interest me on my [blog](https://rfangit.github.io/blog/). If you have any questions for me, happy to chat.
 
 Contact: raymond.fan@alumni.utoronto.ca
