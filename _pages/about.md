@@ -27,9 +27,9 @@ I'm a postdoc affiliated with the [Redwood Center](https://redwood.berkeley.edu/
 
 I believe we live in a very exciting time for deep learning theory, where we see overparameterized models exhibit many interesting phenomena (e.g., grokking, double descent) that appear to defy classical statistical learning theory.
 
-This mirrors the state of quantum mechanics in the early 20th century, where new experiments revealed phenomena unexplainable by classical mechanics, such as the photoelectric effect and the ultraviolet catastrophe. The development of the theory of quantum mechanics not only allowed us to understand these phenomena, but also led to semiconductors, nuclear energy, medical imaging.
+This mirrors the state of quantum mechanics in the early 1900s, where experiments revealed phenomena unexplainable by classical mechanics such as the photoelectric effect and the ultraviolet catastrophe. The development of the theory of quantum mechanics not only allowed us to understand these phenomena, but also led to semiconductors, nuclear energy, medical imaging, etc.
 
-I believe we will be able to develop similar understanding for deep learning, and unlock similar benefits.
+I believe we will be able to develop similar understanding for deep learning.
 
 I sometimes share writing on technical topics that interest me on my [blog](https://rfangit.github.io/blog/). If you have any questions for me, happy to chat.
 
