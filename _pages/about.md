@@ -23,7 +23,7 @@ latest_posts:
   limit: 3 # leave blank to include all the blog posts
 ---
 
-I'm a postdoc affiliated with the [Redwood Center](https://redwood.berkeley.edu/) at UC Berkeley, working with [Jamie Simon](https://jamiesimon.io/) on fundamental theory for deep learning. I completed my PhD in Physics (2024) at the [University of Toronto](https://www.utoronto.ca/), studying how biological networks can process information. I also worked briefly as a Research Scientist at a startup, where I acquired a strong interest in understanding deep learning.
+I'm a postdoc at [FLAB](https://flab.world/) at UC Berkeley, working with [Jamie Simon](https://jamiesimon.io/) on fundamental theory for deep learning. I completed my PhD in Physics (2024) at the [University of Toronto](https://www.utoronto.ca/), studying how biological networks can process information. I also worked briefly as a Research Scientist at a startup, where I acquired a strong interest in understanding deep learning.
 
 I believe we live in a very exciting time for deep learning theory, where we see overparameterized models exhibit many interesting phenomena (e.g., grokking, double descent) that appear to defy classical statistical learning theory.
 

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>You can also read raw network weights!</title>
+<style>
+  /* Stand-in for al-folio's distill layout. Text (.l-body) and figures (.l-page) share one 900px column. */
+  :root { --bg:#fff; --fg:#222; --muted:#666; --rule:rgba(128,128,128,.35); }
+  html[data-theme="dark"] { --bg:#1c1c1d; --fg:#e6e6e6; --muted:#aaa; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:17px/1.65 Georgia, "Times New Roman", serif; }
+  main { max-width:900px; margin:0 auto; padding:28px 20px 100px; }
+  .l-body { max-width:900px; }
+  .l-page { max-width:900px; }
+  h1 { font:700 36px/1.2 system-ui, sans-serif; margin:.3em 0 .1em; }
+  .subtitle { color:var(--muted); font-style:italic; margin:0 0 1.6em; }
+  h2 { font:600 23px/1.3 system-ui, sans-serif; margin:2em 0 .4em; }
+  h3 { font:600 18px/1.3 system-ui, sans-serif; margin:1.4em 0 .3em; }
+  code { font-size:.88em; }
+  ul { padding-left:1.3em; }
+  .themebtn { position:fixed; top:12px; right:14px; font:13px system-ui; padding:5px 10px; cursor:pointer;
+              background:var(--bg); color:var(--fg); border:1px solid currentColor; border-radius:6px; z-index:10; }
+  /* placeholders for content still to be written or drawn */
+  .todo { border:2px dashed #e0a030; border-radius:8px; padding:12px 16px; margin:1em 0;
+          font:14px/1.5 system-ui, sans-serif; color:var(--muted); background:rgba(224,160,48,.07); }
+  .todo b { color:#c8861a; }
+  .todo.figure { min-height:180px; display:flex; flex-direction:column; justify-content:center; text-align:center; }
+  details.spoiler { border:1px solid var(--rule); border-radius:6px; padding:.3em .9em; margin:1em 0; }
+  details.wv-details h3, details.wv-details .l-body { margin-left:auto; margin-right:auto; }
+  .wv-tab { min-height:120px; }
+  .wv-tab h3, .wv-tab .l-body { margin-left:auto; margin-right:auto; }
+  details.spoiler > summary { cursor:pointer; font:600 15px system-ui, sans-serif; padding:.3em 0; }
+</style>
+</head>
+<body>
+<button class="themebtn" onclick="var h=document.documentElement;h.setAttribute('data-theme',h.getAttribute('data-theme')==='dark'?'light':'dark')">light / dark</button>
+<main>
+
+<h1 class="l-body">You can also read raw network weights!</h1>
+<p class="subtitle l-body">At least for simple networks like the ones described here. As someone who wasn't a mech interp researcher, this was a fun exercise.</p>
+
+<p class="l-body">Supposedly <a href="https://rikiyat.github.io/blog/weight-space-programming/">Astra can read raw weights and infer the game which it was trained on</a>. This statement sounded to me like neural networks can handle the very hard and high dimensional problem of understanding how neurons work.</p>
+
+<p class="l-body">But Astra's reasoning traces don't seem to be doing any magic: The references to specific weights look intimidating, but it seemed to identify very simple features that I thought humans could easily see too. This made me wonder how hard this task was. Maybe these networks just happen to be extraordinarily easy to reverse engineer when given the information in these prompts? Their repo contains folders with unlabelled networks, so we can try to semi-blind analyze these and see just how 'hard' these networks are.</p>
+
+<p class="l-body">Specifically, we'll focus on their first two experiments because they try to reverse engineer raw weights. Experiment 3 is similar, but its prompt and task require background knowledge I don't have (on language modeling and mech interp of transformers). Experiments 1 and 2 are domains I am more familiar with (RL, diffusion).</p>
+
+<p>(A spoiler: I suspect the wow factor of this paper goes down a lot if you look at the tasks and prompts closely and have some domain knowledge. The large variety of experiments makes it hard for a single person to assess the true difficulty of the tasks.)</p>
+
+<h2 class="l-body" id="experiment-1-simple-game-reverse-engineering">Experiment 1: Simple Game Reverse Engineering</h2>
+
+<p class="l-body">Their experiment 1 was as follows: They trained a network to play a game in 10×10 input pixel space, and provide <a href="https://github.com/RikiyaT/lm_understand-logs/tree/main/exp1_which_game/networks">the weights</a> to Astra. They give a prompt to Astra asking it to figure out which game the network was trained on.</p>
+
+<p class="l-body">This turns out to be surprisingly easy: their prompts have enough information about input and output structure that you can plot the first and last layers, which reveals the answers right away. No hidden representations are needed. The networks seem almost purposefully designed to make reverse engineering trivial.</p>
+
+<p>Specifically, their prompt has the following details:</p>
+
+<ul class="l-body">
+  <li>The network is an MLP with tanh activations: a 500×32 first layer, a 32×32 hidden layer and a 32×5 output layer, each with a bias.</li>
+  <li>The inputs are 5 binary channels on the 10×10 grid (the outer ring of cells is a wall):
+    <ul>
+      <li>channel 0: the player-controlled cells (agent)</li>
+      <li>channel 1: moving objects other than the agent</li>
+      <li>channel 2: reward targets</li>
+      <li>channel 3: obstacles (cells the agent can't enter or that end the episode, including the wall)</li>
+      <li>channel 4: the previous frame (cells that were in channel 0 or 1 on the last step)</li>
+    </ul>
+  </li>
+  <li>The outputs are 5 actions: no-op, up, down, left and right.</li>
+</ul>
+
+<details class="wv-details l-page">
+  <summary>The full prompt</summary>
+  <pre class="wv-prompt">THE OBSERVATION
+The network sees a 10 x 10 grid. Rows are numbered 0 (top) to 9 (bottom) and columns 0 (left) to 9 (right). The outer ring of cells (row 0, row 9, column 0 and column 9) is a wall border; the playable area is the inner 8 x 8 cells (rows 1-8, columns 1-8).
+Each cell has 5 binary channels (0 or 1):
+  channel 0  agent: the cells the player controls
+  channel 1  moving objects: things other than the agent that move
+  channel 2  reward targets: things that give reward
+  channel 3  obstacles: cells the agent cannot enter or that end the episode (the wall border is always here)
+  channel 4  previous frame: the cells that were in channel 0 or channel 1 on the previous step
+The observation is flattened to 500 numbers. Input number i = (row * 10 + column) * 5 + channel; for example input 0 is (row 0, column 0, channel 0), input 4 is (row 0, column 0, channel 4), input 5 is (row 0, column 1, channel 0) and input 499 is (row 9, column 9, channel 4).
+
+THE ACTIONS
+The network outputs 5 numbers (logits), one per action; the action is sampled from the softmax of these logits:
+  action 0  no-op
+  action 1  up (toward row 0)
+  action 2  down (toward row 9)
+  action 3  left (toward column 0)
+  action 4  right (toward column 9)
+
+THE NETWORK
+A policy network (multilayer perceptron) with 500 inputs, two hidden layers of 32 units with tanh activations, and 5 outputs:
+  h1 = tanh(x @ W1 + b1)          W1: 500 x 32, b1: 32
+  h2 = tanh(h1 @ W2 + b2)         W2: 32 x 32,  b2: 32
+  logits = h2 @ W3 + b3           W3: 32 x 5,   b3: 5
+Row i of W1 holds the weights from input i to the 32 hidden units; column j of a weight matrix belongs to unit j of the next layer. 17,253 parameters in total. It was trained with reinforcement learning (PPO) to maximise the reward of a game played on this grid.
+
+QUESTION. The weights below belong to one policy network that was trained with reinforcement learning to play a game on this grid. Which game was it trained on? Work from the weights. You have no tools: no code execution, no calculator, nothing to run. This is a single response.
+
+Answer in this order:
+Observations: &lt;what you see in the weights: for each input channel, where in the grid its weights are large or show structure and what that suggests; what the output layer and its biases show about the actions; quote the weights you rely on&gt;
+Reasoning: &lt;which kinds of game fit these observations, which are ruled out, and why&gt;
+Game: &lt;the game, as specifically as you can; if it resembles a well-known game, give that game&#x27;s name&gt;
+Description: &lt;what the agent does and what gives reward, in one or two sentences&gt;
+Confidence: &lt;0-100&gt;%
+
+THE NETWORK&#x27;S WEIGHTS
+Policy network weights. Forward pass: h1 = tanh(x @ W1 + b1); h2 = tanh(h1 @ W2 + b2); logits = h2 @ W3 + b3. Values rounded to 3 decimals.</pre>
+  <p class="wv-trace-note">(followed by all 17,253 weights, written out as numbers)</p>
+</details>
+  
+<p class="l-body">We can visualize this task as follows:</p>
+
+<figure class="wv-gif l-page" style="margin:1.2em auto;text-align:center"><img style="width:680px;max-width:100%;height:auto" src="task-figure.png" alt="Diagram of the task: a Pong frame split into 5 input channels, flattened into 500 inputs and passed through the network to 5 action logits" width="680" height="860"><figcaption style="text-align:center;font:13px system-ui,sans-serif;opacity:.75;margin-top:6px">A diagram of the neural network task.</figcaption></figure>
+
+<p class="l-body">The goal is to figure out what video game the network was trained to do only by looking at the weights.</p>
+
+<p>The original problem didn't provide a finite space of answers to pick from in its prompt. Unfortunately, I can't forget the tasks now that I've seen them, so our reverse engineering challenge will have to be simpler: Given that the four tasks are Pong, Pac-man, Breakout, and Frogger, can we identify which is which by looking at the network?</p>
+
+<figure class="wv-gallery l-page" style="display:flex;flex-wrap:nowrap;justify-content:center;gap:12px;margin:1.2em auto;text-align:center">
+  <img src="pong.gif" alt="A game clip" width="200" height="200" style="width:calc((100% - 36px) / 4);max-width:200px;height:auto;image-rendering:pixelated;border-radius:4px">
+  <img src="pacman.gif" alt="A game clip" width="200" height="200" style="width:calc((100% - 36px) / 4);max-width:200px;height:auto;image-rendering:pixelated;border-radius:4px">
+  <img src="breakout.gif" alt="A game clip" width="200" height="200" style="width:calc((100% - 36px) / 4);max-width:200px;height:auto;image-rendering:pixelated;border-radius:4px">
+  <img src="frogger.gif" alt="A game clip" width="200" height="200" style="width:calc((100% - 36px) / 4);max-width:200px;height:auto;image-rendering:pixelated;border-radius:4px">
+</figure>
+<p class="wv-caption" style="text-align:center;font:13px system-ui,sans-serif;opacity:.75;margin:-0.4em auto 1.2em">The four games we will identify from their trained networks.</p>
+
+<h2 class="l-body" id="task-1">Task 1</h2>
+
+<p class="l-body">In text form, raw network weights mean little to humans. This is what Astra was given:</p>
+
+<div class="l-page" data-wv="text" data-wv-net="net2"></div>
+
+<p class="l-body">We can convert the matrices into image form, but those aren't too helpful either.</p>
+
+<div class="l-page" data-wv="raw" data-wv-net="net2"></div>
+
+<p class="l-body">But the prompt has lots of information on how the inputs are structured! Let's try and use it: break up weights by their input channels, and inspect where the channels come from in the 10×10 game space.</p>
+
+<p class="l-body">Breaking the 500×32 matrix into 5 100×32 matrices, and ordering them by rows and columns, leads to the following result.</p>
+
+<div class="l-page" data-wv="channels" data-wv-net="net2"></div>
+
+<p class="l-body">The trained network only seems to care about the agent in row 8. This suggests a game where we only control a character that moves at the bottom of our screen.</p>
+
+<p class="l-body">It cares about moving objects above that row, indicated by the weights there. Rewards seem to exist only in rows 1 to 3. And the network cares a lot about past game states, particularly where moving objects are.</p>
+
+<p class="l-body">What else can we extract? Well, we can visualize which pixels in layer 1 have large weight magnitudes, and visualize this as 5 10×10 input channels.</p>
+
+<div class="l-page" data-wv="size" data-wv-net="net2" data-wv-scale="per"></div>
+
+<p class="l-body">There is a clear structure, and the weight magnitudes suggest the moving object and previous frame matter more than other channels.</p>
+
+<p class="l-body">Anyone who has played this game probably recognizes it. But for completeness, we'll try other simple insights.</p>
+
+<p class="l-body">The hidden layer looks like a complete mess. I couldn't think of any general way to figure out what the neurons are doing.</p>
+
+<p class="l-body">We know this network has tanh activations, with outputs from -1 to 1, so the average input to the last layer is roughly 0. (IMO this is very convenient; I don't think ReLU networks would have this property). Then last layer network biases could tell us if the network prefers to take any actions over others.</p>
+
+<div class="l-page" data-wv="bias" data-wv-net="net2"></div>
+
+<p class="l-body">Our analysis shows that all actions seem equally probable. This is surprising since the agent channel only cares about one row: probably up and down don't actually move the agent up or down.</p>
+
+<p class="l-body">These observations suggest the game is Breakout: you control a paddle that moves from left to right (our agent weights), bouncing a ball (the moving object weights) to hit rows of blocks at the top (the reward weights). The previous frame lets you determine the direction of the ball.</p>
+
+<figure class="wv-gif l-page" style="margin:1.2em auto;text-align:center"><img src="breakout.gif" alt="Breakout, played by the trained network" width="200" height="200" style="width:200px;max-width:100%;height:auto;image-rendering:pixelated;border-radius:4px"><figcaption style="text-align:center;font:13px system-ui,sans-serif;opacity:.75;margin-top:6px">Breakout, played by the trained network.</figcaption></figure>
+
+<h2 class="l-body" id="comparing-with-astra">Comparing with Astra</h2>
+
+<p class="l-body">After this, I looked again at Astra's reasoning for this task. Their logic matches ours:</p>
+
+<ul class="l-body">
+  <li>identify relevant rows for the agent</li>
+  <li>moving targets are above the agent</li>
+  <li>rewards in rows 1–3</li>
+  <li>obstacles are irrelevant</li>
+  <li>previous frame matters where there are moving targets</li>
+  <li>no strong bias in outputs</li>
+</ul>
+
+<details class="wv-details l-page">
+  <summary>Astra's reasoning for task 1</summary>
+  <div class="wv-trace">
+    <p class="wv-trace-note">[Before writing this, Astra thought for 833 tokens. That thinking is hidden. The API returns only its 3 headings: Deciphering Breakout channels / Mapping Breakout channels / Confirming paddle row mapping]</p>
+    <h4>Observations</h4>
+    <p>Indices below are zero-based.</p>
+    <ul>
+      <li><b>Channel 0 — agent:</b> Strong weights are concentrated on row 8, across the playable columns; elsewhere they look mostly like small initialization-scale values. At (8,1), weights include 4.066 to hidden unit 15 and −4.013 to unit 31. This suggests a bottom-mounted paddle moving horizontally, rather than a character roaming the grid.</li>
+      <li><b>Channel 1 — moving objects:</b> Large, structured weights cover the interior above the paddle. At (1,3), examples include 3.194, 2.708, −4.791, 3.436 to units 5–8. At (2,2), those weights are 3.408, 2.416, −6.356, 4.570. This is consistent with tracking a ball throughout the playfield.</li>
+      <li><b>Channel 2 — reward targets:</b> Learned structure is concentrated in rows 1–3, whereas lower rows have mostly small weights. Examples include 1.620 at (1,2) to unit 25, and −4.811 and −3.236 at (3,1) to units 0 and 20. A band of reward-bearing objects above a paddle strongly suggests bricks. Negative weights do not mean negative reward; these are hidden-feature connections.</li>
+      <li><b>Channel 3 — obstacles:</b> Interior weights are mostly small, without a conspicuous maze-like pattern. Border weights have a repeated pattern: for example, (0,0) and (0,1) connect to unit 1 with 0.255 and 0.193, respectively, alongside b1[1] = 0.199. Since the border is always present, its shared structure can function as an additional constant bias.</li>
+      <li><b>Channel 4 — previous frame:</b> Strong interior weights closely resemble the moving-object channel. At (1,3), units 7 and 8 receive −4.301, 3.057, compared with −4.791, 3.436 for the current moving object. This supports using successive ball positions to estimate motion; bottom-row structure also accommodates the previous paddle position.</li>
+      <li><b>Outputs:</b> Left and right are especially differentiated, while no-op/up/down often have similar coefficients. For example:
+      <ul>
+        <li>W3 row 22: 0.376, 0.387, 0.537, −5.336, −1.203</li>
+        <li>W3 row 11: −0.177, 0.185, 0.450, 4.057, −0.414</li>
+        <li>W3 row 24: 0.367, 0.561, 0.305, 0.911, 3.031</li>
+      </ul></li>
+    </ul>
+    <p>This fits horizontal paddle control, with vertical commands potentially equivalent to doing nothing. Output biases [1.221, 1.008, 1.024, 0.897, 1.298] are relatively similar; they do not establish a dominant action independently of the hidden activations.</p>
+    <h4>Reasoning</h4>
+    <p>The combination of a bottom-row paddle, a moving ball above it, upper-row reward targets, and horizontal action specialization is characteristic of brick breaking.</p>
+    <p>Pong could explain a paddle and ball, but not the substantial upper band of reward targets. Catching falling objects is less consistent with separate, spatially structured targets above the moving object’s playfield. Snake, Pac-Man, and maze navigation would generally require agent-position structure throughout the interior and meaningful movement along both axes.</p>
+    <h4>Game</h4>
+    <p>Breakout — a small grid-based brick-breaking variant.</p>
+    <h4>Description</h4>
+    <p>The agent moves a bottom paddle left and right to keep a bouncing ball in play and direct it into bricks above. Destroying bricks gives reward; missing the ball likely costs a life or ends the episode.</p>
+    <h4>Confidence</h4>
+    <p>99%</p>
+  </div>
+</details>
+
+<p class="l-body">The reasoning makes many references to specific weights and values, which makes it seem like they're doing something very complicated.</p>
+
+<p class="l-body">Except we saw that those sort of fine-grained details don't seem necessary at all! In fact, we didn't look at the hidden layer - coarse bookkeeping on the input and output layers (identifying which rows have big numbers and remember the prompt explaining what they correspond to) are sufficient to figure out the game. This also works for all the games they try! It seems unclear to me from the provided reasoning traces whether or not Astra actually did anything meaningful with the hidden layer.</p>
+  
+<h2 class="l-body" id="other-tasks">Other Tasks</h2>
+
+<p class="l-body">We can look at their other tasks.</p>
+
+<!-- Raw weights: one collapsible per task.  Task 2 = net3, task 3 = net4, task 4 = net1. -->
+<details class="wv-details l-page"><summary>Task 2: raw weights</summary><div data-wv="raw" data-wv-net="net3"></div></details>
+<details class="wv-details l-page"><summary>Task 3: raw weights</summary><div data-wv="raw" data-wv-net="net4"></div></details>
+<details class="wv-details l-page"><summary>Task 4: raw weights</summary><div data-wv="raw" data-wv-net="net1"></div></details>
+
+<p class="l-body">Our data visualization is useful for every task, since they're all 10×10 pixel games with 5 channels (provided in the prompt).</p>
+
+<!-- Analysis: one collapsible per task: the channel split in a nested collapsible, then weight norms and output biases, then my notes. -->
+<details class="wv-details l-page">
+  <summary>Task 2: analysis</summary>
+  <details class="wv-details">
+    <summary>Weights by channel</summary>
+    <div data-wv="channels" data-wv-net="net3"></div>
+  </details>
+  <div data-wv="size" data-wv-net="net3" data-wv-scale="per"></div>
+  <div data-wv="bias" data-wv-net="net3"></div>
+  <p class="l-body">Weight norms show the agent and moving objects occupy the same maze-like area with large weights. The reward, obstacle and previous-frame channels are harder to read, but their norms are much smaller, so they probably matter less.</p>
+
+  <p class="l-body">The output biases imply the network rarely stands still. It also has a bias against moving right.</p>
+
+  <p class="l-body">Some features are weird (random heavy reward cells, left movement bias), but the maze shape, shared by the agent and the moving objects, clearly matches <b>Pac-Man</b>. This explains why standing still is unlikely: in Pac-Man there's no advantage to it.</p>
+
+  <figure class="wv-gif l-page" style="margin:1.2em auto;text-align:center"><img src="pacman.gif" alt="Pac-Man, played by the trained network" width="200" height="200" style="width:200px;max-width:100%;height:auto;image-rendering:pixelated;border-radius:4px"><figcaption style="text-align:center;font:13px system-ui,sans-serif;opacity:.75;margin-top:6px">Pac-Man, played by the trained network.</figcaption></figure>
+
+  <h3 class="l-body">Comparing with Astra</h3>
+
+  <p class="l-body">Astra also zeroes in on the maze shape and on the agent and moving-object channels. Its discussion of the other channels didn't make much sense to me. In particular, its reasoning for channel 4 says the policy uses movement history to track enemies and recent motion, which Pac-Man doesn't really need.</p>
+
+  <p class="l-body">Its reasoning also names Pong, Breakout, falling-object catching and Snake as the alternatives, so Astra may already believe these are the only options.</p>
+  <details class="wv-details">
+    <summary>Astra's reasoning for task 2</summary>
+    <div class="wv-trace">
+      <p class="wv-trace-note">[Before writing this, Astra thought for 1,034 tokens. That thinking is hidden. The API returns only its 5 headings: Reconstructing the active map / Mapping maze corridors / Preparing exact maze map / Reconstructing row groupings / Checking channel patterns]</p>
+      <h4>Observations</h4>
+      <ul>
+        <li><b>Channel 0 — agent:</b> Large, position-specific weights follow a maze-shaped pattern, not an unrestricted arena or a single paddle row. For example, at (1,1) weights include −3.242, 3.377, −3.734, 4.081; at (1,3), 4.742, −3.778, 3.890. In contrast, (2,2) and (2,3) have small, initialization-like weights. The apparent corridor layout is below (. = substantial learned agent weights; # = small weights):<pre class="wv-trace-ascii">........
+  .##..##.
+  .#....#.
+  ...##...
+  ...##...
+  .#....#.
+  .##..##.
+  ........</pre></li>
+      </ul>
+      <p>This strongly suggests a fixed, symmetric maze.</p>
+      <ul>
+        <li><b>Channel 1 — moving objects:</b> Strong weights occur throughout those same corridors. At (1,1), examples include 2.453, 1.978, −1.619; at (1,6), −3.386. Other moving entities therefore matter across the maze—consistent with ghosts or pursuing enemies.</li>
+        <li><b>Channel 2 — reward targets:</b> Generally much smaller weights than the agent and moving-object channels, but clearly learned in some locations. Connections to first-layer unit 6 include −1.490 at (1,1), −2.361 at (1,2), −1.905 at (1,3), and −4.876 at (2,4). This fits collectible targets distributed through corridors, with uneven importance to the learned policy. Negative weights alone do not mean avoidance.</li>
+        <li><b>Channel 3 — obstacles:</b> Mostly small weights, including at interior locations. For example, the obstacle vector at (1,1) begins 0.057, 0.106, 0.006, 0.008. Together with the sharp corridor pattern in other channels, this suggests constant maze walls, whose layout can be memorized rather than dynamically interpreted. The always-present border also shows shared structure, such as repeatedly negative connections to unit 6.</li>
+        <li><b>Channel 4 — previous frame:</b> Meaningful, spatially structured weights occur along corridors. At (1,1), examples include −0.739, −1.316, 0.593; at (1,8), −2.849 to unit 9. The policy uses movement history, plausibly to track enemies and recent motion.</li>
+        <li><b>Outputs:</b> All four movement actions have substantial, differentiated connections: examples include 2.144 for up, 2.502 for down, 2.490 for left, and 2.500 for right. Biases are [−0.873, 0.703, 0.712, 0.595, −0.092], discouraging no-op relative to movement, though actual preferences depend on hidden activations.</li>
+      </ul>
+      <h4>Reasoning</h4>
+      <p>The combination of a fixed symmetric maze, collectibles, independently moving entities, and four-direction navigation is characteristic of Pac-Man.</p>
+      <p>Pong, Breakout, and falling-object catching would normally restrict the agent to a row or column. Open-arena chasing does not explain the maze-shaped inactive cells. Ordinary maze navigation does not explain the strong moving-object channel. Snake is less consistent with this fixed corridor geometry and the comparatively weak obstacle channel, which would otherwise need to represent changing collision hazards.</p>
+      <h4>Game</h4>
+      <p>Pac-Man, or a simplified grid-based Pac-Man clone.</p>
+      <h4>Description</h4>
+      <p>The agent navigates maze corridors, collecting pellets or other reward items while avoiding moving ghosts. Reward comes from collecting those items, potentially with a bonus for clearing the maze.</p>
+      <h4>Confidence</h4>
+      <p>96%</p>
+    </div>
+  </details>
+</details>
+<details class="wv-details l-page">
+  <summary>Task 3: analysis</summary>
+  <details class="wv-details">
+    <summary>Weights by channel</summary>
+    <div data-wv="channels" data-wv-net="net4"></div>
+  </details>
+  <div data-wv="size" data-wv-net="net4" data-wv-scale="per"></div>
+  <div data-wv="bias" data-wv-net="net4"></div>
+  <p class="l-body">Agents seem confined to the left, and moving objects appear rightwards, with more weight on those near the left. Rewards appear only in the rightmost column. The previous frame is very important, with very large norms. The action probabilities are roughly even.</p>
+
+  <p class="l-body">A game that confines you to the left side, tracks a moving object through its previous frames, and puts the rewards on the opposite side is most consistent with <b>Pong</b>: you control the left paddle and try to get the ball to the right. The main differences from Breakout are that the paddle is vertical and there is only one line of rewards.</p>
+
+  <figure class="wv-gif l-page" style="margin:1.2em auto;text-align:center"><img src="pong.gif" alt="Pong, played by the trained network" width="200" height="200" style="width:200px;max-width:100%;height:auto;image-rendering:pixelated;border-radius:4px"><figcaption style="text-align:center;font:13px system-ui,sans-serif;opacity:.75;margin-top:6px">Pong, played by the trained network.</figcaption></figure>
+
+  <h3 class="l-body">Comparing with Astra</h3>
+
+  <p class="l-body">Astra focuses on the same things: where agents and moving objects can be, where rewards are, and the relevance of the previous frame. Again, it quotes specific numbers, which makes this seem more mysterious than it is. It decides between Breakout and Pong by whether the paddle is at the bottom or on the left.</p>
+  <details class="wv-details">
+    <summary>Astra's reasoning for task 3</summary>
+    <div class="wv-trace">
+      <p class="wv-trace-note">[Before writing this, Astra thought for 1,031 tokens. That thinking is hidden. The API returns only its 5 headings: Checking channel pattern / Mapping channel pattern / Checking right-wall pattern / Distinguishing Pong from Breakout. / Checking Pong evidence.]</p>
+      <h4>Observations</h4>
+      <ul>
+        <li><b>Channel 0 — agent:</b> Large, learned weights are concentrated in column 1, across the playable rows, rather than throughout the board. At (1,1), weights include 2.697, -2.474, and -2.322; at (2,1), they include -3.588 and 2.245. This suggests a player-controlled object confined to the left side—a vertical paddle.</li>
+        <li><b>Channel 1 — moving objects:</b> Strong weights extend through the interior to the right of that paddle. At (1,2), examples are -3.169, 2.039, and -3.022; at (1,5), 2.305 and 3.278. This fits a ball travelling through the court, not an agent navigating it.</li>
+        <li><b>Channel 2 — reward targets:</b> Interior weights look small and initialization-like: at (1,1), the first four are 0.073, 0.015, -0.076, 0.000. There is instead a repeated, bias-like pattern on the right boundary: at (1,9), weights begin 0.028, -0.052, 0.203, 0.316. This suggests a fixed scoring/target boundary, not scattered food or a field of destructible bricks.</li>
+        <li><b>Channel 3 — obstacles:</b> The border has a repeated pattern, while interior weights are small. For example, (0,0) includes 0.275 toward hidden unit 3 and 0.289 toward unit 20; the corresponding biases are 0.271 and 0.248. Always-present walls can act as additional biases; this is not evidence of learned maze navigation.</li>
+        <li><b>Channel 4 — previous frame:</b> Strong weights cover the paddle and ball regions. At (1,1), examples include -1.578 and 1.031; at (1,5), they reach 5.236 and 3.913. Previous positions evidently matter, consistent with estimating ball direction and predicting interception.</li>
+        <li><b>Outputs:</b> Up and down are distinguished; no-op, left, and right have very similar output columns. For example, W3 row 18 is [-1.399, -1.370, 1.587, -1.283, -1.215], strongly distinguishing down; row 31 is [0.553, 1.950, 0.123, 0.616, 0.587], distinguishing up. Biases [0.931, 1.261, 1.065, 0.861, 0.855] mildly favour up, but do not alone establish action frequencies. The three similar columns suggest three effectively equivalent “stay” actions.</li>
+      </ul>
+      <h4>Reasoning</h4>
+      <p>A left-edge paddle, vertically meaningful controls, an independently moving ball, and substantial use of previous positions strongly identify Pong-style interception.</p>
+      <p>Ordinary Breakout would usually have a bottom paddle, meaningful left/right controls, and structured brick-target inputs. Snake, maze navigation, and food collection would require agent-position structure across both dimensions and generally distinguish all four directions. A simple falling-object catcher likewise usually moves horizontally.</p>
+      <p>The fixed right-side target pattern and lack of an evident independently moving opponent favour a single-paddle, wall-return variant, although the exact scoring rules cannot be established from these weights alone.</p>
+      <h4>Game</h4>
+      <p>Pong — most likely a single-player, vertical-paddle wall-Pong variant.</p>
+      <h4>Description</h4>
+      <p>The agent moves a paddle up and down along the left side to intercept and return a moving ball, avoiding misses. Reward likely comes from successful returns and/or the ball reaching the opposite scoring boundary.</p>
+      <h4>Confidence</h4>
+      <p>96%</p>
+    </div>
+  </details>
+</details>
+<details class="wv-details l-page">
+  <summary>Task 4: analysis</summary>
+  <details class="wv-details">
+    <summary>Weights by channel</summary>
+    <div data-wv="channels" data-wv-net="net1"></div>
+  </details>
+  <div data-wv="size" data-wv-net="net1" data-wv-scale="per"></div>
+  <div data-wv="bias" data-wv-net="net1"></div>
+  <p class="l-body">The agent moves around a fairly large area with no obvious structure. Moving objects fill the same area, and their history matters a lot too. Rewards sit at the top of the screen.</p>
+
+  <p class="l-body">The action probabilities are heavily biased towards moving up.</p>
+
+  <p class="l-body">This is the only one where I would have needed knowledge of what games are plausible. In this case, it's <b>Frogger</b>, a game where you cross to the other side of a road while dodging traffic (I played variants of it as a kid). Looking up Frogger, the clues are there: the agent isn't restricted to a row or column, the moving objects' history matters, and above all the biases say the agent has a strong reason to move up towards its reward.</p>
+
+  <figure class="wv-gif l-page" style="margin:1.2em auto;text-align:center"><img src="frogger.gif" alt="Frogger, played by the trained network" width="200" height="200" style="width:200px;max-width:100%;height:auto;image-rendering:pixelated;border-radius:4px"><figcaption style="text-align:center;font:13px system-ui,sans-serif;opacity:.75;margin-top:6px">Frogger, played by the trained network.</figcaption></figure>
+
+  <h3 class="l-body">Comparing with Astra</h3>
+
+  <p class="l-body">Astra's analysis here is interesting. In the raw weights (not just the norms), the moving-object channel has a faint structure that repeats every four cells. Astra claims this is a sign of regularly spaced traffic in horizontal lanes.</p>
+
+  <p class="l-body">This is also the only task where it says something understandable about the hidden neurons: it notes that some output neurons strongly favor going left, or going right. (This is unclear to me from looking at raw W3 weights.) Its answer comes from ruling out Pong, Breakout, Snake and food collection (Pac-Man?).</p>
+  <details class="wv-details">
+    <summary>Astra's reasoning for task 4</summary>
+    <div class="wv-trace">
+      <p class="wv-trace-note">[Before writing this, Astra thought for 1,034 tokens. That thinking is hidden. The API returns only its 5 headings: Inferring periodic row movement / Mapping Frogger row patterns / Counting pattern rows / Inspecting row2 coefficients / Checking row2 coefficients]</p>
+      <h4>Observations</h4>
+      <ul>
+        <li><b>Channel 0 — agent:</b> Strong, position-dependent weights cover rows 2–8, rather than a single paddle row. For example, at (2,4) the weights include 4.331, −2.970, 3.294, −3.827. This suggests an agent navigating across the board.</li>
+        <li><b>Channel 1 — moving objects:</b> Strong structure occupies rows 2–7, with striking horizontal repetition. At (2,1), hidden units 18 and 25 receive −1.898, 1.562; at (2,5) they receive −1.879, 1.611. At (3,2) and (3,6), unit 12 receives 6.639 and 6.689. These four-column repetitions suggest regularly spaced traffic in horizontal lanes. Row 8 looks like a safe starting strip.</li>
+        <li><b>Channel 2 — reward targets:</b> The conspicuous structure is across row 1, columns 1–8, not scattered throughout the interior. At (1,1), weights include −0.550 to unit 3, 0.440 to unit 25, and 0.464 to unit 28. The similar vectors across this row suggest a fixed destination spanning the top.</li>
+        <li><b>Channel 3 — obstacles:</b> The border has nearly identical learned vectors; interior weights are generally small and unstructured. For example, (0,0) has −0.477, 0.440, 0.437 at units 3, 25, and 28. These resemble the corresponding biases −0.492, 0.434, 0.434, consistent with always-present border inputs acting as additional biases—not evidence of an interior maze.</li>
+        <li><b>Channel 4 — previous frame:</b> Substantial structure appears in the traffic region and at agent positions. At (2,1), weights include −1.443 and −2.266; at (2,5), −0.786 and −2.405. Temporal information therefore matters, fitting movement prediction and crossing timing.</li>
+        <li><b>Outputs:</b> The biases strongly favor up: [−0.029, 3.142, −1.862, 0.173, −1.269]. However, all directions retain substantial state-dependent connections: output-layer unit 6 has 2.626 toward up and −2.432 toward right; unit 29 has −1.691 toward left and 2.315 toward right. This fits upward progress with situational evasive moves; biases alone do not establish action frequencies.</li>
+      </ul>
+      <h4>Reasoning</h4>
+      <p>The combination of a bottom safe strip, several horizontally periodic moving-object lanes, a top destination, and a strong upward action bias points directly to a road-crossing game. Previous-frame processing supports timing crossings around moving traffic.</p>
+      <p>Pong or Breakout would normally restrict the agent to a paddle line. Snake and food-collection games would require substantial reward-target structure throughout the interior. A conventional maze would show interior obstacle structure. Those alternatives fit much less well.</p>
+      <h4>Game</h4>
+      <p>Frogger — a simplified grid-based traffic-crossing variant.</p>
+      <p><b>Description:</b> The agent moves from the bottom toward the top, timing its movements to avoid horizontally moving traffic. Reaching the top destination gives reward.</p>
+      <p><b>Confidence:</b> 97%</p>
+    </div>
+  </details>
+</details>
+
+<h2 class="l-body" id="closing-thoughts-on-experiment-1">Closing Thoughts On Experiment 1</h2>
+
+<p class="l-body">Although it sounds impressive, the task itself is actually pretty easy because the network and prompt contains a surprising amount of information (this would not work on most networks I work with!). Here, reverse engineering is mostly about finding rows/columns with large numerical values and remembering the prompt.</p>
+  
+<p>I would argue that some details seem to make it too easy (for example an explicitly identified reward channel seems unnecessary for training this model, but helps tremendously for reverse engineering). What I initially thought this experiment was about (and is still unclear) is whether or not they can understand complicated parts of the network - the hidden neurons. But these tasks don't require that at all. I imagine there are many examples of simple reverse engineering at the level needed to solve these tasks.</p>
+
+<p>Additionally, from Astra's responses, it sounds like some fairly trivial variations of this experiment that would at least give it more validity would be to try seeing what comes up in snake or flipped versions of Breakout/Pong.</p>
+
+<p>(An aside: it seems really weird to report the LLM generated confidence score as a metric, which they have in their experiments. But maybe this is standard for LLMs?)</p>
+
+<h2 class="l-body" id="experiment-2-diffusion-models">Experiment 2: Diffusion Models</h2>
+
+<p class="l-body">The second experiment is about inferring what a diffusion model generates. Some background is helpful here: a diffusion model takes in a noisy image and outputs a denoised version. Pure noise can then be used to generate new images by applying the model over and over.</p>
+
+<p class="l-body">What they did: they trained three small diffusion models on 12×12 grayscale images, each on one kind of shape, and gave Astra <a href="https://github.com/RikiyaT/lm_understand-logs/tree/main/exp2_diffusion/networks">the weights</a>. Their prompt includes the following details:</p>
+
+<ul class="l-body">
+  <li>Pixel values run from −1 (black) to +1 (white).</li>
+  <li>The network is an MLP with ReLU activations: 160 inputs (the 144 pixels of the noisy image, plus 16 numbers encoding how noisy it is), two hidden layers of 64 units, and 144 outputs, the network's guess of the clean image.</li>
+  <li>Astra is not allowed to run the network or simulate the sampling: it has to answer from the weights.</li>
+</ul>
+
+<p>The last one is important, since otherwise using pure noise one could easily infer the output shape.</p>
+
+<details class="wv-details l-page">
+  <summary>The full prompt</summary>
+  <pre class="wv-prompt">THE MODEL
+A denoising diffusion model (DDPM) for 12 x 12 grayscale images. Pixel values lie in [-1, 1]: -1 is black, +1 is white. Pixel number i = row * 12 + column (row 0 is the top row, column 0 the left column).
+Training: every training image x_0 comes from one fixed collection of images. For a random step t (0..999) and Gaussian noise eps (one standard normal number per pixel), the noisy image is x_t = sqrt(abar_t) * x_0 + sqrt(1 - abar_t) * eps, where beta_t rises linearly from 0.0001 (t = 0) to 0.02 (t = 999) and abar_t = (1 - beta_0)(1 - beta_1)...(1 - beta_t). The network learned to predict the clean image x_0 from x_t and t (loss: the average of (prediction - x_0)^2 over pixels).
+Generation: start from pure Gaussian noise (t = 999); at every step the network&#x27;s prediction of x_0 (clipped to [-1, 1]) is used to take one standard DDPM step to t - 1, down to t = 0. The result is a new image of the kind the model was trained on.
+
+THE NETWORK
+Input: 160 numbers: inputs 0..143 are the pixels of x_t (input i = pixel i); inputs 144..159 encode the step t: input 144 + k = sin(t * f_k) and input 152 + k = cos(t * f_k), with f_k = 1 / 10000^(k / 8), k = 0..7.
+  h1 = relu(x @ W1 + b1)          W1: 160 x H, b1: H
+  h2 = relu(h1 @ W2 + b2)         W2: H x H, b2: H
+  x0_hat = h2 @ W3 + b3           W3: H x 144, b3: 144 (output j = the predicted clean value of pixel j)
+Row i of a weight matrix belongs to input i (or unit i of the previous layer); column j to unit j of the next layer (for W3: pixel j).
+
+QUESTION. The weights below belong to one such diffusion model. What images does it generate? Work from the weights. You have no tools: no code execution, no calculator, nothing to run. Do not do any forward-pass calculation: do not run the network on any input (in your head or on paper), and do not simulate the sampling. Read what the weights themselves show. This is a single response.
+
+Answer in this order:
+Observations: &lt;what you see in the weights (for example which pixels or units have large or structured weights, patterns over the 12 x 12 grid); quote the weights you rely on&gt;
+Reasoning: &lt;what kinds of images fit these observations, which are ruled out, and why&gt;
+Images: &lt;what the generated images show, as specifically as you can: what is drawn, how big, where&gt;
+Example: &lt;one typical generated image as 12 lines of 12 characters, &#x27;#&#x27; for white and &#x27;.&#x27; for black&gt;
+Confidence: &lt;0-100&gt;%
+
+THE WEIGHTS
+The network&#x27;s weights (H = 64). Values rounded to 3 decimals.</pre>
+</details>
+
+<p class="l-body">Visualizing the raw weights is not very useful, though there is some structure in the last layer.</p>
+
+<details class="wv-details l-page"><summary>Model A: raw weights</summary><div data-wv="raw" data-wv-net="diff1" data-wv-act="relu" data-wv-out="x̂₀"
+  data-wv-note="Rows are a layer's inputs and columns its outputs (h = relu(x·W + b)). W1's 160 rows are the 144 pixels of x_t followed by 16 step-encoding inputs; W3's 144 columns are the pixels of the predicted clean image."></div></details>
+
+<p class="l-body">This is a task where domain knowledge helps a lot. Each of the last 64 neurons generates a guess for the 12x12 image, which is added together to produce the network output. Thus someone familiar with diffusion could just look at each final neuron's weights, and see what shape it adds to the guess when it switches on.</p>
+
+<div class="l-page" data-wv="units" data-wv-net="diff1" data-wv-base="hide"></div>
+
+<p class="l-body">The patterns are short straight edges at 60 degree angles. The shape is obviously a triangle.</p>
+
+<p class="l-body">The other two models are just as obvious: one has horizontal and vertical lines, along with corners and even some square-like shapes, the other circle-like arcs.</p>
+
+<details class="wv-details l-page"><summary>Model B: raw weights</summary><div data-wv="raw" data-wv-net="diff2" data-wv-act="relu" data-wv-out="x̂₀"
+  data-wv-note="Rows are a layer's inputs and columns its outputs (h = relu(x·W + b)). W1's 160 rows are the 144 pixels of x_t followed by 16 step-encoding inputs; W3's 144 columns are the pixels of the predicted clean image."></div></details>
+<details class="wv-details l-page"><summary>Model C: raw weights</summary><div data-wv="raw" data-wv-net="diff3" data-wv-act="relu" data-wv-out="x̂₀"
+  data-wv-note="Rows are a layer's inputs and columns its outputs (h = relu(x·W + b)). W1's 160 rows are the 144 pixels of x_t followed by 16 step-encoding inputs; W3's 144 columns are the pixels of the predicted clean image."></div></details>
+<details class="wv-details l-page"><summary>Model B: final neurons</summary><div data-wv="units" data-wv-net="diff2" data-wv-base="hide"></div></details>
+<details class="wv-details l-page"><summary>Model C: final neurons</summary><div data-wv="units" data-wv-net="diff3" data-wv-base="hide"></div></details>
+
+<h3 class="l-body">Comparing with Astra</h3>
+
+<p class="l-body">This analysis is similar to the provided reasoning traces, which seem to just look at the output weights and find the obvious shapes present.</p>
+
+<details class="wv-details l-page">
+  <summary>Model A: Astra's reasoning</summary>
+  <div class="wv-trace">
+    <p class="wv-trace-note">[Before writing this, Astra thought for 1,034 tokens. That thinking is hidden. The API returns only its 4 headings: Inferring triangle outlines / Inspecting triangle outlines / Checking row weight patterns / Checking triangle fill patterns]</p>
+    <h4>Observations</h4>
+    <ul>
+      <li>The weights have a triangular spatial organization: little structure near the upper corners, with structured regions spreading outward toward the bottom.</li>
+      <li>A descending left edge appears in output unit 13: weights include 0.129 at (row 1, column 5), 0.328 at (3,4), 0.368 at (5,3), and 0.450 at (6,2).</li>
+      <li>Output unit 21 has the complementary right edge: 0.350 at (1,6), 0.464 at (3,7), 0.387 at (4,8), and 0.419 at (6,9).</li>
+      <li>Other output units describe horizontal lower strokes. Unit 20’s row-10 weights are 0.012, 0.237, 0.403, 0.361, 0.264, 0.253, 0.295, 0.345, 0.353, 0.216, 0.169, 0.011: a broad positive bar with weak endpoints at the image borders.</li>
+      <li>Background-associated output weights are negative. For example, unit 31’s top-row weights run from roughly −0.09 to −0.12. The output biases also generally favor darker borders.</li>
+    </ul>
+    <h4>Reasoning</h4>
+    <p>The paired sloping strokes and horizontal lower strokes strongly suggest upright triangle outlines. Their differing positions suggest variation in triangle dimensions and placement, rather than one fixed template. Narrow edge patterns favor hollow triangles over filled ones. Rectangles lack these sloping sides; circles lack the straight base and converging edges. An “A” is less consistent with the horizontal strokes being concentrated toward the bottom rather than forming a middle crossbar.</p>
+    <h4>Images</h4>
+    <p>My best reading is a single white, hollow, upward-pointing triangle on black, approximately centered, with a near-horizontal base low in the image. Typical dimensions appear roughly 7–10 pixels tall and 6–10 pixels wide, with some variation in apex position, width, and base height. Those dimensions are approximate, not verified sampling results.</p>
+    <h4>Example</h4>
+    <pre class="wv-trace-ascii">............
+............
+.....#......
+....#.#.....
+....#.#.....
+...#...#....
+...#...#....
+..#.....#...
+..#.....#...
+.#.......#..
+.#########..
+............</pre>
+    <p><b>Confidence:</b> 88%</p>
+  </div>
+</details>
+<details class="wv-details l-page">
+  <summary>Model B: Astra's reasoning</summary>
+  <div class="wv-trace">
+    <p class="wv-trace-note">[Before writing this, Astra thought for 2,588 tokens. That thinking is hidden. The API returns only its 13 headings: Analyzing rectangle geometry / Comparing rectangle edge patterns / Checking row indexing / Checking row indexing / Checking row indexing / Checking row indexing / Determining rectangle fill patterns / Examining rectangle weight patterns / Assessing rectangle geometry / Assessing likely rectangle outlines / Assessing rectangle outlines / Characterizing possible white rectangular outlines / … and 1 more]</p>
+    <h4>Observations</h4>
+    <ul>
+      <li>The weights contain conspicuous horizontal and vertical strips, rather than diagonal or curved patterns.</li>
+      <li>For example, W1[26,0] = 0.428, W1[38,0] = 0.412, and W1[50,0] = 0.369: these pixels are all in column 2, at successive rows.</li>
+      <li>Output unit 55 has a strong horizontal strip at row 1: its weights at columns 4–7 are 0.486, 0.498, 0.510, 0.503. At the same columns in row 2, they fall to 0.147, 0.080, 0.070, 0.083.</li>
+      <li>Output unit 57 has a strong vertical strip at column 8: rows 3–7 have weights 0.357, 0.368, 0.363, 0.423, 0.403. Immediately beside it, column 9 has -0.184, -0.219, -0.240, -0.209, -0.192.</li>
+      <li>Other units place strips elsewhere: unit 47 emphasizes row 3; unit 56 emphasizes column 10, including weights 0.433, 0.458, 0.446 at rows 6–8.</li>
+      <li>The output bias favors dark margins: the four corners are -0.691, -0.714, -0.626, -0.690, whereas central biases are much nearer zero.</li>
+    </ul>
+    <h4>Reasoning</h4>
+    <p>These structures favor axis-aligned boxes with variable edge positions. Narrow strips, sometimes with opposite-sign weights immediately alongside them, suggest thin outlines more than solid filled regions. Different horizontal and vertical placements suggest varying sizes and locations, not one fixed box.</p>
+    <p>Circles, diagonal shapes, handwriting, and texture are substantially less consistent with the dominant structure. Individual weight templates do not establish the exact image distribution, so the hollow interior and size range remain inferences.</p>
+    <h4>Images</h4>
+    <p>My best reading is white, approximately one-pixel-thick rectangular outlines on black, generally one rectangle per image. They vary in position and aspect ratio, including square-like boxes, spanning several pixels—roughly 4–10 pixels across and tall—mostly within rows and columns 1–10.</p>
+    <h4>Example</h4>
+    <pre class="wv-trace-ascii">............
+............
+..########..
+..#......#..
+..#......#..
+..#......#..
+..#......#..
+..#......#..
+..#......#..
+..########..
+............
+............</pre>
+    <p><b>Confidence:</b> 77%</p>
+  </div>
+</details>
+<details class="wv-details l-page">
+  <summary>Model C: Astra's reasoning</summary>
+  <div class="wv-trace">
+    <p class="wv-trace-note">[Before writing this, Astra thought for 2,272 tokens. That thinking is hidden. The API returns only its 9 headings: Inspecting possible circle patterns / Inspecting circle patterns / Redoing row numbering / Checking row values / Comparing arc radius variation / Inferring circle geometry / Analyzing circle geometry / Estimating circle size / Checking curved-outline support]</p>
+    <h4>Observations</h4>
+    <ul>
+      <li>The output weights contain curved rim segments. In W3 row 42, pixels at image row 1, columns 2–4 have weights 0.351, 0.552, 0.382; at image row 2, columns 1–2 they are 0.348, 0.577. This traces an upper-left bend.</li>
+      <li>Other units describe complementary portions of a rounded boundary. W3 row 29 has 0.194, 0.408, 0.507, 0.503, 0.323 across image row 1, columns 4–8. W3 row 41 has 0.244, 0.419, 0.525, 0.582, 0.367 across image row 10, columns 4–8.</li>
+      <li>There are strong side segments: W3 row 17 has 0.395, 0.501, 0.472 at column 2 of image rows 4–6. W3 row 19 has 0.360, 0.519, 0.519 at column 10 of those rows.</li>
+      <li>These are localized bands with weaker or negative weights beside them, rather than uniformly positive filled regions. The outer background also has negative biases—for example, b3 begins -0.551, -0.602, -0.555. Biases alone are not the generated image.</li>
+    </ul>
+    <h4>Reasoning</h4>
+    <p>The complementary top, bottom, and curved side bands strongly suggest circular or slightly oval outlines. Their differing locations suggest variation in size and placement, rather than one immutable template. Thin curved bands favor hollow rings over filled disks; they do not suggest the straight edges of squares, crosses, or stripes. Exact dimensions and the amount of variation are less certain without evaluating the network.</p>
+    <h4>Images</h4>
+    <p>My best reading is a single white circle outline on black, with a black interior, roughly 8–10 pixels across, approximately centered, with modest variation in size, position, and roundness. The stroke is approximately one pixel thick, potentially with gray edge pixels.</p>
+    <h4>Example</h4>
+    <pre class="wv-trace-ascii">............
+....####....
+...#....#...
+..#......#..
+.#........#.
+.#........#.
+.#........#.
+.#........#.
+..#......#..
+...#....#...
+....####....
+............</pre>
+    <p><b>Confidence:</b> 84%</p>
+  </div>
+</details>
+
+<h3 class="l-body">Closing Thoughts</h3>
+
+<p class="l-body">There's not really much to say about the diffusion example since it just applies diffusion domain knowledge.</p>
+
+<h2 class="l-body" id="conclusion">Conclusion</h2>
+
+<p>What was surprising to me about both experiments is just how easy the actual networks were. What sounds like extremely challenging interpretability problems actually pretty trivial. The ability of the newest models to do them seems more like an indicator that they've begun training more extensively on mechanistic interpretability to me.</p>
+
+<p>To some degree I feel like the other tasks may be similar. <a href="https://www.seangoedecke.com/llms-are-not-superhuman-at-reading-and-writing-neural-network-weights/">PPO cart adjustment</a> seems like it can be done by completely ignoring the provided neural network (easy by changing a small number of weights with really large norms) and program the dynamical system. Likewise, I've seen some <a href="https://fixupx.com/Karim_abdelll/status/2117474032866279627">criticisms about the choice of PPO baselines</a>. I don't know much about this so I can't be sure how reasonable the criticism is.</p>
+
+<p>Note that I'm not the first person to point out task 1 can be done with some simplified statistics. <a href="https://www.seangoedecke.com/llms-are-not-superhuman-at-reading-and-writing-neural-network-weights/">This blog post</a> jumps straight into the weight norms - the last layer biases are only needed for estimating frogger, which is biased to go upwards (although it's useful for pac-man too, where you really do not want to stay still).</p>
+
+</main>
+
+<!-- Weights first, then the drawing code (deferred scripts run in this order).
+     Task 1 = net2, task 2 = net3, task 3 = net4, task 4 = net1 (the notebooks' numbering).
+     Experiment 2: model A = diff1 (triangles), B = diff2 (squares), C = diff3 (circles), in upload order. -->
+<script defer src="net1.js"></script>
+<script defer src="net2.js"></script>
+<script defer src="net3.js"></script>
+<script defer src="net4.js"></script>
+<script defer src="diff1.js"></script>
+<script defer src="diff2.js"></script>
+<script defer src="diff3.js"></script>
+<script defer src="weight-viz.js"></script>
+</body>
+</html>
